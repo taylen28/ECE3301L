@@ -1,10 +1,10 @@
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE  1
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00001 #include<P18F4620.inc>
+                      00001         #include <P18F4620.inc>
                       00001         LIST
                       00002 
                       00003 ;==========================================================================
@@ -15,75 +15,129 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00008 ;==========================================================================
                       00009 
                       01440         LIST
-Warning[205]: Found directive in column 1. (config)
-                      00002 config OSC = INTIO67
-Warning[205]: Found directive in column 1. (config)
-                      00003 config WDT = OFF
-Warning[205]: Found directive in column 1. (config)
-                      00004 config LVP = OFF
-Warning[205]: Found directive in column 1. (config)
-                      00005 config BOREN = OFF
-                      00006 ; Constant declarations
-  000000F9            00007 Delay1 equ 0xF9 
-  000000FF            00008 Delay2 equ 0XFF
-  00000020            00009 Counter_L equ 0x20
-  00000021            00010 Counter_H equ 0x21
-Warning[205]: Found directive in column 1. (ORG)
-                      00011 ORG 0x0000
-                      00012  ; CODE STARTS FROM THE NEXT LINE
-000000                00013 START:
-000000 0E0F           00014  MOVLW 0x0F ;
-000002 6EC1           00015  MOVWF ADCON1 ;
-000004 0E00           00016  MOVLW 0x00 ;
-000006 6E92           00017  MOVWF TRISA ;
-000008                00018 MAIN_LOOP:
-Warning[203]: Found opcode in column 1. (MOVLW)
-000008 0E05           00019 MOVLW 0x05 ;
-Warning[203]: Found opcode in column 1. (MOVWF)
-00000A 6E80           00020 MOVWF PORTA ;
-                      00021 ;
-00000C EC?? F???      00022  CALL DELAY_ONE_SEC ;
-Warning[203]: Found opcode in column 1. (MOVLW)
-000010 0E0A           00023 MOVLW 0x0A ;
-Warning[203]: Found opcode in column 1. (MOVWF)
-000012 6E80           00024 MOVWF PORTA ;
-000014 EC?? F???      00025  CALL DELAY_ONE_SEC ;
-000018 EF?? F???      00026  GOTO MAIN_LOOP ;
-                      00027 ; the routine below is a subroutine, and it is called ?DELAY_ONE_SEC?.
-00001C                00028 DELAY_ONE_SEC:
-Warning[203]: Found opcode in column 1. (MOVLW)
-00001C 0EF9           00029 MOVLW Delay1 ;
-Warning[203]: Found opcode in column 1. (MOVWF)
-00001E 6E21           00030 MOVWF Counter_H ;
-000020                00031 LOOP_OUTER:
-Warning[203]: Found opcode in column 1. (NOP)
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE  2
+                      00002 
+                      00003         config OSC = INTIO67
+                      00004         config WDT = OFF
+                      00005         config LVP = OFF
+                      00006         config BOREN = OFF
+                      00007 
+                      00008 ;---------------- Registers ----------------
+  000000F6            00009 Delay1      equ     0xF6
+  000000FF            00010 Delay2      equ     0xFF
+  00000020            00011 Counter_L   equ     0x20
+  00000021            00012 Counter_H   equ     0x21
+  00000028            00013 Color_Value equ     0x28
+  00000029            00014 Loop_Count  equ     0x29
+                      00015 
+                      00016         ORG     0x0000
+000000 EF?? F???      00017         GOTO    START
+                      00018 
+                      00019 ;---------------- Main ----------------
+000004                00020 START:
+000004 0E0F           00021         MOVLW   0x0F
+000006 6EC1           00022         MOVWF   ADCON1          ; make ports digital
+                      00023 
+000008 6A94           00024         CLRF    TRISC           ; LED1 (D1) on PORTC<2:0>
+00000A 6A95           00025         CLRF    TRISD           ; LED2 (D2) on PORTD<7:5>
+00000C 6A96           00026         CLRF    TRISE
+                      00027 
+                      00028 ; -------- Array 1 (LED1 sequence, 0x40?0x47, PORTC<2:0>) --------
+00000E 0E05           00029         MOVLW   0x05           ; 0 Purple (101)
+000010 6E40           00030         MOVWF   0x40
+000012 0E03           00031         MOVLW   0x03           ; 1 Yellow (011)
+000014 6E41           00032         MOVWF   0x41
+000016 0E04           00033         MOVLW   0x04           ; 2 Blue (100)
+000018 6E42           00034         MOVWF   0x42
+00001A 0E06           00035         MOVLW   0x06           ; 3 Cyan (110)
+00001C 6E43           00036         MOVWF   0x43
+00001E 0E01           00037         MOVLW   0x01           ; 4 Red (001)
+000020 6E44           00038         MOVWF   0x44
+000022 0E02           00039         MOVLW   0x02           ; 5 Green (010)
+000024 6E45           00040         MOVWF   0x45
+000026 0E07           00041         MOVLW   0x07           ; 6 White (111)
+000028 6E46           00042         MOVWF   0x46
+00002A 0E00           00043         MOVLW   0x00           ; 7 Off (000)
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-000020 0000           00032 NOP ;
-Warning[203]: Found opcode in column 1. (MOVLW)
-000022 0EFF           00033 MOVLW Delay2 ;
-Warning[203]: Found opcode in column 1. (MOVWF)
-000024 6E20           00034 MOVWF Counter_L ;
-000026                00035 LOOP_INNER:
-Warning[203]: Found opcode in column 1. (NOP)
-000026 0000           00036 NOP ;
-Warning[203]: Found opcode in column 1. (DECF)
-000028 0620           00037 DECF Counter_L,F ;
-Warning[203]: Found opcode in column 1. (BNZ)
-00002A E1??           00038 BNZ LOOP_INNER ;
-Warning[203]: Found opcode in column 1. (DECF)
-00002C 0621           00039 DECF Counter_H,F ;
-Warning[203]: Found opcode in column 1. (BNZ)
-00002E E1??           00040 BNZ LOOP_OUTER ;
-Warning[203]: Found opcode in column 1. (RETURN)
-000030 0012           00041 RETURN
-                      00042 ; end of subroutine ?DELAY_ONE_SEC?
-                      00043  END 
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE  3
+00002C 6E47           00044         MOVWF   0x47
+                      00045 
+                      00046 ; -------- Array 2 (LED2 sequence, 0x48?0x4F, PORTD<7:5>) --------
+00002E 0E30           00047         MOVLW   0x06<<3           ; 0 Cyan (110 << 5 = 0xC0)
+000030 6E50           00048         MOVWF   0x50
+000032 0E38           00049         MOVLW   0x07<<3           ; 1 White (111 << 5 = 0xE0)
+000034 6E51           00050         MOVWF   0x51
+000036 0E10           00051         MOVLW   0x02<<3           ; 2 Green (010 << 5 = 0x40)
+000038 6E52           00052         MOVWF   0x52
+00003A 0E00           00053         MOVLW   0x00<<3           ; 3 Off
+00003C 6E53           00054         MOVWF   0x53
+00003E 0E38           00055         MOVLW   0x07<<3           ; 4 White
+000040 6E54           00056         MOVWF   0x54
+000042 0E20           00057         MOVLW   0x04<<3           ; 5 Blue (100 << 5 = 0x80)
+000044 6E55           00058         MOVWF   0x55
+000046 0E28           00059         MOVLW   0x05<<3           ; 6 Purple (101 << 5 = 0xA0)
+000048 6E56           00060         MOVWF   0x56
+00004A 0E08           00061         MOVLW   0x01<<3           ; 7 Red (001 << 5 = 0x20)
+00004C 6E57           00062         MOVWF   0x57
+                      00063 
+                      00064 ; -------- Loop --------
+00004E                00065 WHILE_LOOP:
+00004E 6A28           00066         CLRF    Color_Value
+000050 0E08           00067         MOVLW   0x08
+000052 6E29           00068         MOVWF   Loop_Count
+                      00069 
+000054 EE00 F040      00070         LFSR    0, 0x40        ; point FSR0 to Array1
+000058 EE10 F050      00071         LFSR    1, 0x50        ; point FSR1 to Array2
+                      00072 
+00005C                00073 FOR_LOOP:
+                      00074         ; LED1 on PORTC<2:0>
+00005C 50EF           00075         MOVF    INDF0, W
+00005E 6E82           00076         MOVWF   PORTC
+                      00077 
+                      00078         ; LED2 on PORTD<7:5>
+000060 50E7           00079         MOVF    INDF1, W
+000062 6E83           00080         MOVWF   PORTD
+                      00081 
+000064 EC?? F???      00082         CALL    DELAY_ONE_SEC
+                      00083 
+000068 2AE9           00084         INCF    FSR0L, F
+00006A 2AE1           00085         INCF    FSR1L, F
+                      00086 
+00006C 0629           00087         DECF    Loop_Count, F
+00006E E1??           00088         BNZ     FOR_LOOP
+                      00089 
+000070 EF?? F???      00090         GOTO    WHILE_LOOP
+                      00091 
+                      00092 ; -------- Delay Subroutine --------
+000074                00093 DELAY_ONE_SEC:
+000074 0EF6           00094         MOVLW   Delay1
+000076 6E21           00095         MOVWF   Counter_H
+                      00096 
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+000078                00097 LOOP_OUTER:
+000078 0EFF           00098         MOVLW   Delay2
+00007A 6E20           00099         MOVWF   Counter_L
+                      00100 
+00007C                00101 LOOP_INNER:
+00007C 0000           00102         NOP
+00007E 0620           00103         DECF    Counter_L, F
+000080 E1??           00104         BNZ     LOOP_INNER
+                      00105 
+000082 0621           00106         DECF    Counter_H, F
+000084 E1??           00107         BNZ     LOOP_OUTER
+                      00108 
+000086 0012           00109         RETURN
+                      00110 
+                      00111         END
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE  4
 
 
 SYMBOL TABLE
@@ -142,7 +196,7 @@ C1OUT                             00000006
 C2INV                             00000005
 C2OUT                             00000007
 CCP1                              00000002
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE  4
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE  5
 
 
 SYMBOL TABLE
@@ -201,7 +255,7 @@ CVR2                              00000002
 CVR3                              00000003
 CVRCON                            00000FB5
 CVREN                             00000007
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE  5
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE  6
 
 
 SYMBOL TABLE
@@ -210,6 +264,7 @@ SYMBOL TABLE
 CVROE                             00000006
 CVRR                              00000005
 CVRSS                             00000004
+Color_Value                       00000028
 Counter_H                         00000021
 Counter_L                         00000020
 D                                 00000005
@@ -223,11 +278,11 @@ DDRB                              TRISB
 DDRC                              TRISC
 DDRD                              TRISD
 DDRE                              TRISE
-DELAY_ONE_SEC                     0000001C
+DELAY_ONE_SEC                     00000074
 DONE                              00000001
 D_A                               00000005
 D_NOT_A                           00000005
-Delay1                            000000F9
+Delay1                            000000F6
 Delay2                            000000FF
 ECCP1AS                           00000FB6
 ECCPAS0                           00000004
@@ -245,6 +300,7 @@ EEIP                              00000004
 EEPGD                             00000007
 FAST                              00000001
 FERR                              00000002
+FOR_LOOP                          0000005C
 FREE                              00000004
 FSR0                              00000000
 FSR0H                             00000FEA
@@ -258,14 +314,14 @@ FSR2L                             00000FD9
 GCEN                              00000007
 GIE                               00000007
 GIEH                              00000007
-GIEL                              00000006
-GIE_GIEH                          00000007
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE  6
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE  7
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+GIEL                              00000006
+GIE_GIEH                          00000007
 GO                                00000001
 GO_DONE                           00000001
 GO_NOT_DONE                       00000001
@@ -317,14 +373,14 @@ IPR1                              00000F9F
 IPR2                              00000FA2
 IRCF0                             00000004
 IRCF1                             00000005
-IRCF2                             00000006
-IRVST                             00000005
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE  7
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE  8
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+IRCF2                             00000006
+IRVST                             00000005
 IVRST                             00000005
 KBI0                              00000004
 KBI1                              00000005
@@ -370,20 +426,20 @@ LATE                              00000F8D
 LATE0                             00000000
 LATE1                             00000001
 LATE2                             00000002
-LOOP_INNER                        00000026
-LOOP_OUTER                        00000020
+LOOP_INNER                        0000007C
+LOOP_OUTER                        00000078
 LVDCON                            00000FD2
 LVDEN                             00000004
 LVDIE                             00000002
 LVDIF                             00000002
-LVDIN                             00000005
-LVDIP                             00000002
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE  8
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE  9
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+LVDIN                             00000005
+LVDIP                             00000002
 LVDL0                             00000000
 LVDL1                             00000001
 LVDL2                             00000002
@@ -392,7 +448,7 @@ LVV0                              00000000
 LVV1                              00000001
 LVV2                              00000002
 LVV3                              00000003
-MAIN_LOOP                         00000008
+Loop_Count                        00000029
 MCLR                              00000003
 N                                 00000004
 NOT_A                             00000005
@@ -435,14 +491,14 @@ PCFG2                             00000002
 PCFG3                             00000003
 PCL                               00000FF9
 PCLATH                            00000FFA
-PCLATU                            00000FFB
-PD                                00000002
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE  9
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE 10
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+PCLATU                            00000FFB
+PD                                00000002
 PDC0                              00000000
 PDC1                              00000001
 PDC2                              00000002
@@ -494,14 +550,14 @@ PSP5                              00000005
 PSP6                              00000006
 PSP7                              00000007
 PSPIE                             00000007
-PSPIF                             00000007
-PSPIP                             00000007
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE 10
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE 11
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+PSPIF                             00000007
+PSPIP                             00000007
 PSPMODE                           00000004
 PSSAC0                            00000002
 PSSAC1                            00000003
@@ -553,14 +609,14 @@ RD16                              00000007
 RD2                               00000002
 RD3                               00000003
 RD4                               00000004
-RD5                               00000005
-RD6                               00000006
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE 11
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE 12
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+RD5                               00000005
+RD6                               00000006
 RD7                               00000007
 RE0                               00000000
 RE1                               00000001
@@ -612,14 +668,14 @@ SSPM2                             00000002
 SSPM3                             00000003
 SSPOV                             00000006
 SSPSTAT                           00000FC7
-START                             00000000
-STATUS                            00000FD8
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE 12
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE 13
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+START                             00000004
+STATUS                            00000FD8
 STKFUL                            00000007
 STKOVF                            00000007
 STKPTR                            00000FFC
@@ -671,14 +727,14 @@ TBLPTR                            00000FF6
 TBLPTRH                           00000FF7
 TBLPTRL                           00000FF6
 TBLPTRU                           00000FF8
-TMR0                              00000FD6
-TMR0H                             00000FD7
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE 13
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE 14
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+TMR0                              00000FD6
+TMR0H                             00000FD7
 TMR0IE                            00000005
 TMR0IF                            00000002
 TMR0IP                            00000002
@@ -730,14 +786,14 @@ TRISB6                            00000006
 TRISB7                            00000007
 TRISC                             00000F94
 TRISC0                            00000000
-TRISC1                            00000001
-TRISC2                            00000002
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE 14
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE 15
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+TRISC1                            00000001
+TRISC2                            00000002
 TRISC3                            00000003
 TRISC4                            00000004
 TRISC5                            00000005
@@ -780,6 +836,7 @@ VPP                               00000003
 W                                 00000000
 WCOL                              00000007
 WDTCON                            00000FD1
+WHILE_LOOP                        0000004E
 WR                                00000001
 WREG                              00000FE8
 WREN                              00000002
@@ -788,15 +845,15 @@ WUE                               00000001
 Z                                 00000002
 _BOREN_NOSLP_2L                   000000FD
 _BOREN_OFF_2L                     000000F9
-_BOREN_ON_2L                      000000FB
-_BOREN_SBORDIS_2L                 000000FF
-_BORV_0_2L                        000000E7
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE 15
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE 16
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+_BOREN_ON_2L                      000000FB
+_BOREN_SBORDIS_2L                 000000FF
+_BORV_0_2L                        000000E7
 _BORV_1_2L                        000000EF
 _BORV_2_2L                        000000F7
 _BORV_3_2L                        000000FF
@@ -847,15 +904,15 @@ _IDLOC2                           00200002
 _IDLOC3                           00200003
 _IDLOC4                           00200004
 _IDLOC5                           00200005
-_IDLOC6                           00200006
-_IDLOC7                           00200007
-_IESO_OFF_1H                      0000007F
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE 16
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE 17
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+_IDLOC6                           00200006
+_IDLOC7                           00200007
+_IESO_OFF_1H                      0000007F
 _IESO_ON_1H                       000000FF
 _LPT1OSC_OFF_3H                   000000FB
 _LPT1OSC_ON_3H                    000000FF
@@ -906,15 +963,15 @@ _WRT2_ON_6L                       000000FB
 _WRT3_OFF_6L                      000000FF
 _WRT3_ON_6L                       000000F7
 _WRTB_OFF_6H                      000000FF
-_WRTB_ON_6H                       000000BF
-_WRTC_OFF_6H                      000000FF
-_WRTC_ON_6H                       000000DF
-MPASM 5.77                        LAB3P1.ASM   9-23-2025  13:44:31         PAGE 17
+MPASM 5.77                        LAB3P5.ASM   9-16-2025  17:33:32         PAGE 18
 
 
 SYMBOL TABLE
   LABEL                             VALUE 
 
+_WRTB_ON_6H                       000000BF
+_WRTC_OFF_6H                      000000FF
+_WRTC_ON_6H                       000000DF
 _WRTD_OFF_6H                      000000FF
 _WRTD_ON_6H                       0000007F
 _XINST_OFF_4L                     000000BF
@@ -922,7 +979,7 @@ _XINST_ON_4L                      000000FF
 __18F4620                         00000001
 
 Errors   :     0
-Warnings :    20 reported,     0 suppressed
+Warnings :     0 reported,     0 suppressed
 Messages :     0 reported,     0 suppressed
 
 
