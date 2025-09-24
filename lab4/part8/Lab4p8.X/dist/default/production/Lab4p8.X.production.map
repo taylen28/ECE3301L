@@ -1,0 +1,88 @@
+MPLINK 5.08, LINKER
+Linker Map File - Created Tue Sep 23 19:05:42 2025
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000160
+                   .cinit    romdata   0x000160    program   0x000002
+.config_300001_BUILD/DEFAULT/PRODUCTION/LAB4P8.    romdata   0x300001    program   0x000001
+.config_300002_BUILD/DEFAULT/PRODUCTION/LAB4P8.    romdata   0x300002    program   0x000001
+.config_300003_BUILD/DEFAULT/PRODUCTION/LAB4P8.    romdata   0x300003    program   0x000001
+.config_300006_BUILD/DEFAULT/PRODUCTION/LAB4P8.    romdata   0x300006    program   0x000001
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000161      
+                            0x300001    0x300003      
+                            0x300006    0x300006      
+            358 out of 66584 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+               BCD_LESS10   0x00014e    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                MAIN_LOOP   0x000012    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                PE21_EQ00   0x00003a    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                PE21_EQ01   0x000030    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  PE2_EQ0   0x000026    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  PE2_EQ1   0x00001c    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                    START   0x000000    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  SUB_ADD   0x0000b2    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  SUB_AND   0x00010c    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  SUB_BCD   0x00012a    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 SUB_COMP   0x000098    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                   SUB_OR   0x0000ee    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  SUB_XOR   0x0000d0    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 TASK_ADD   0x000052    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 TASK_AND   0x00007c    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 TASK_BCD   0x00008a    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                TASK_COMP   0x000044    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  TASK_OR   0x00006e    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 TASK_XOR   0x000060    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 ZSET_ADD   0x0000cc    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 ZSET_AND   0x000126    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                ZSET_BCDG   0x00014a    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                ZSET_BCDL   0x00015c    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                ZSET_COMP   0x0000ae    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  ZSET_OR   0x000108    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 ZSET_XOR   0x0000ea    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    START   0x000000    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                MAIN_LOOP   0x000012    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  PE2_EQ1   0x00001c    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  PE2_EQ0   0x000026    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                PE21_EQ01   0x000030    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                PE21_EQ00   0x00003a    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                TASK_COMP   0x000044    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 TASK_ADD   0x000052    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 TASK_XOR   0x000060    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  TASK_OR   0x00006e    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 TASK_AND   0x00007c    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 TASK_BCD   0x00008a    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 SUB_COMP   0x000098    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                ZSET_COMP   0x0000ae    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  SUB_ADD   0x0000b2    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 ZSET_ADD   0x0000cc    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  SUB_XOR   0x0000d0    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 ZSET_XOR   0x0000ea    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                   SUB_OR   0x0000ee    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  ZSET_OR   0x000108    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  SUB_AND   0x00010c    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                 ZSET_AND   0x000126    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                  SUB_BCD   0x00012a    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                ZSET_BCDG   0x00014a    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+               BCD_LESS10   0x00014e    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+                ZSET_BCDL   0x00015c    program     static C:\Users\tayle\MPLABXV42\lab4\part8\Lab4p8.X\lab4p8.asm
+
+

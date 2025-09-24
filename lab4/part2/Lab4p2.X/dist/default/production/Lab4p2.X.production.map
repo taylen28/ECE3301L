@@ -1,0 +1,44 @@
+MPLINK 5.08, LINKER
+Linker Map File - Created Tue Sep 23 17:58:08 2025
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000030
+                   .cinit    romdata   0x000030    program   0x000002
+.config_300001_BUILD/DEFAULT/PRODUCTION/LAB4P2.    romdata   0x300001    program   0x000001
+.config_300002_BUILD/DEFAULT/PRODUCTION/LAB4P2.    romdata   0x300002    program   0x000001
+.config_300003_BUILD/DEFAULT/PRODUCTION/LAB4P2.    romdata   0x300003    program   0x000001
+.config_300006_BUILD/DEFAULT/PRODUCTION/LAB4P2.    romdata   0x300006    program   0x000001
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000031      
+                            0x300001    0x300003      
+                            0x300006    0x300006      
+            54 out of 66584 program addresses used, program memory utilization is 0%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                MAIN_LOOP   0x000012    program     static C:\Users\tayle\MPLABXV42\lab4\part2\Lab4p2.X\lab4p2.asm
+                  SET_BIT   0x00002a    program     static C:\Users\tayle\MPLABXV42\lab4\part2\Lab4p2.X\lab4p2.asm
+                    START   0x000000    program     static C:\Users\tayle\MPLABXV42\lab4\part2\Lab4p2.X\lab4p2.asm
+                TEST_DONE   0x00002c    program     static C:\Users\tayle\MPLABXV42\lab4\part2\Lab4p2.X\lab4p2.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    START   0x000000    program     static C:\Users\tayle\MPLABXV42\lab4\part2\Lab4p2.X\lab4p2.asm
+                MAIN_LOOP   0x000012    program     static C:\Users\tayle\MPLABXV42\lab4\part2\Lab4p2.X\lab4p2.asm
+                  SET_BIT   0x00002a    program     static C:\Users\tayle\MPLABXV42\lab4\part2\Lab4p2.X\lab4p2.asm
+                TEST_DONE   0x00002c    program     static C:\Users\tayle\MPLABXV42\lab4\part2\Lab4p2.X\lab4p2.asm
+
+

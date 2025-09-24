@@ -8,7 +8,7 @@ InA	equ		0x20
 InB	equ		0x21
 Result	equ		0x22
     ORG		0x0000			    ; orgin of the program memory and where it is stored
- ; CODE STARTS FROM THE NEXT LINE
+
 START:					    ; start the main proagram
     MOVLW   0x0F			    ; line loaded into the working register data stored in ADCON1
     MOVWF   ADCON1			    ; working register data stored in ADCON1
