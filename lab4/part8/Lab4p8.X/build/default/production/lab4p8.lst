@@ -1,4 +1,4 @@
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE  1
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -57,7 +57,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 000026 B284           00041     BTFSC   PORTE, 1
 000028 EF?? F???      00042     GOTO    PE21_EQ01      ; 01x
 00002C EF?? F???      00043     GOTO    PE21_EQ00      ; 00x
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE  2
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -116,7 +116,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 00008E 8A83           00094     BSF PORTD,5            ; 110
 000090 EC?? F???      00095     CALL SUB_BCD
 000094 EF?? F???      00096     GOTO MAIN_LOOP
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE  3
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -153,122 +153,122 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0000B8 5081           00125     MOVF    PORTB, W
 0000BA 0B0F           00126     ANDLW   0x0F                ; W = InB
 0000BC 2420           00127     ADDWF   InA, W              ; W = InA + InB
-0000BE 0B0F           00128     ANDLW   0x0F                ; keep 4 bits, Z from ANDLW
-0000C0 6E22           00129     MOVWF   Result
-0000C2 C022 FF82      00130     MOVFF   Result, PORTC
+                      00128                   ; keep 4 bits, Z from ANDLW
+0000BE 6E22           00129     MOVWF   Result
+0000C0 C022 FF82      00130     MOVFF   Result, PORTC
                       00131 
-0000C6 9083           00132     BCF     PORTD,0
-0000C8 E0??           00133     BZ      ZSET_ADD
-0000CA 0012           00134     RETURN
-0000CC                00135 ZSET_ADD:
-0000CC 8083           00136     BSF     PORTD,0
-0000CE 0012           00137     RETURN
+0000C4 9083           00132     BCF     PORTD,0
+0000C6 E0??           00133     BZ      ZSET_ADD
+0000C8 0012           00134     RETURN
+0000CA                00135 ZSET_ADD:
+0000CA 8083           00136     BSF     PORTD,0
+0000CC 0012           00137     RETURN
                       00138 
                       00139 ; -- 3) XOR (PORTA ^ PORTB) --
-0000D0                00140 SUB_XOR:
-0000D0 5080           00141     MOVF    PORTA, W
-0000D2 0B0F           00142     ANDLW   0x0F
-0000D4 6E20           00143     MOVWF   InA
-0000D6 5081           00144     MOVF    PORTB, W
-0000D8 0B0F           00145     ANDLW   0x0F                ; W = InB
-0000DA 1820           00146     XORWF   InA, W              ; W = InA ^ InB  (Z set by XORWF)
-0000DC 0B0F           00147     ANDLW   0x0F
-0000DE 6E22           00148     MOVWF   Result
-0000E0 C022 FF82      00149     MOVFF   Result, PORTC
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE  4
+0000CE                00140 SUB_XOR:
+0000CE 5080           00141     MOVF    PORTA, W
+0000D0 0B0F           00142     ANDLW   0x0F
+0000D2 6E20           00143     MOVWF   InA
+0000D4 5081           00144     MOVF    PORTB, W
+0000D6 0B0F           00145     ANDLW   0x0F                ; W = InB
+0000D8 1820           00146     XORWF   InA, W              ; W = InA ^ InB  (Z set by XORWF)
+                      00147   
+0000DA 6E22           00148     MOVWF   Result
+0000DC C022 FF82      00149     MOVFF   Result, PORTC
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE  4
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
                       00150 
-0000E4 9083           00151     BCF     PORTD,0
-0000E6 E0??           00152     BZ      ZSET_XOR
-0000E8 0012           00153     RETURN
-0000EA                00154 ZSET_XOR:
-0000EA 8083           00155     BSF     PORTD,0
-0000EC 0012           00156     RETURN
+0000E0 9083           00151     BCF     PORTD,0
+0000E2 E0??           00152     BZ      ZSET_XOR
+0000E4 0012           00153     RETURN
+0000E6                00154 ZSET_XOR:
+0000E6 8083           00155     BSF     PORTD,0
+0000E8 0012           00156     RETURN
                       00157 
                       00158 ; -- 4) OR (PORTA | PORTB) --
-0000EE                00159 SUB_OR:
-0000EE 5080           00160     MOVF    PORTA, W
-0000F0 0B0F           00161     ANDLW   0x0F
-0000F2 6E20           00162     MOVWF   InA
-0000F4 5081           00163     MOVF    PORTB, W
-0000F6 0B0F           00164     ANDLW   0x0F                ; W = InB
-0000F8 1020           00165     IORWF   InA, W              ; W = InA | InB  (Z set by IORWF)
-0000FA 0B0F           00166     ANDLW   0x0F
-0000FC 6E22           00167     MOVWF   Result
-0000FE C022 FF82      00168     MOVFF   Result, PORTC
+0000EA                00159 SUB_OR:
+0000EA 5080           00160     MOVF    PORTA, W
+0000EC 0B0F           00161     ANDLW   0x0F
+0000EE 6E20           00162     MOVWF   InA
+0000F0 5081           00163     MOVF    PORTB, W
+0000F2 0B0F           00164     ANDLW   0x0F                ; W = InB
+0000F4 1020           00165     IORWF   InA, W              ; W = InA | InB  (Z set by IORWF)
+                      00166    
+0000F6 6E22           00167     MOVWF   Result
+0000F8 C022 FF82      00168     MOVFF   Result, PORTC
                       00169 
-000102 9083           00170     BCF     PORTD,0
-000104 E0??           00171     BZ      ZSET_OR
-000106 0012           00172     RETURN
-000108                00173 ZSET_OR:
-000108 8083           00174     BSF     PORTD,0
-00010A 0012           00175     RETURN
+0000FC 9083           00170     BCF     PORTD,0
+0000FE E0??           00171     BZ      ZSET_OR
+000100 0012           00172     RETURN
+000102                00173 ZSET_OR:
+000102 8083           00174     BSF     PORTD,0
+000104 0012           00175     RETURN
                       00176 
                       00177 ; -- 5) AND (PORTA & PORTB) --
-00010C                00178 SUB_AND:
-00010C 5080           00179     MOVF    PORTA, W
-00010E 0B0F           00180     ANDLW   0x0F
-000110 6E20           00181     MOVWF   InA
-000112 5081           00182     MOVF    PORTB, W
-000114 0B0F           00183     ANDLW   0x0F                ; W = InB
-000116 1420           00184     ANDWF   InA, W              ; W = InA & InB  (Z set by ANDWF)
-000118 0B0F           00185     ANDLW   0x0F
-00011A 6E22           00186     MOVWF   Result
-00011C C022 FF82      00187     MOVFF   Result, PORTC
+000106                00178 SUB_AND:
+000106 5080           00179     MOVF    PORTA, W
+000108 0B0F           00180     ANDLW   0x0F
+00010A 6E20           00181     MOVWF   InA
+00010C 5081           00182     MOVF    PORTB, W
+00010E 0B0F           00183     ANDLW   0x0F                ; W = InB
+000110 1420           00184     ANDWF   InA, W              ; W = InA & InB  (Z set by ANDWF)
+                      00185    
+000112 6E22           00186     MOVWF   Result
+000114 C022 FF82      00187     MOVFF   Result, PORTC
                       00188 
-000120 9083           00189     BCF     PORTD,0
-000122 E0??           00190     BZ      ZSET_AND
-000124 0012           00191     RETURN
-000126                00192 ZSET_AND:
-000126 8083           00193     BSF     PORTD,0
-000128 0012           00194     RETURN
+000118 9083           00189     BCF     PORTD,0
+00011A E0??           00190     BZ      ZSET_AND
+00011C 0012           00191     RETURN
+00011E                00192 ZSET_AND:
+00011E 8083           00193     BSF     PORTD,0
+000120 0012           00194     RETURN
                       00195 
                       00196 ; -- 6) BCD convert nibble in PORTA[3:0] to packed BCD (0..15 -> 0x00..0x15) --
                       00197 ; Method: if value > 9 then add 6 -> yields packed BCD in Result.
-00012A                00198 SUB_BCD:
-00012A 5080           00199     MOVF    PORTA, W
-00012C 0B0F           00200     ANDLW   0x0F
-00012E 6E20           00201     MOVWF   InA                 ; binary 0..15
+000122                00198 SUB_BCD:
+000122 5080           00199     MOVF    PORTA, W
+000124 0B0F           00200     ANDLW   0x0F
+000126 6E20           00201     MOVWF   InA                 ; binary 0..15
                       00202 
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE  5
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-000130 0E09           00203     MOVLW   0x09
-000132 6520           00204     CPFSGT  InA, 1              ; skip next if InA > 9
-000134 EF?? F???      00205     GOTO    BCD_LESS10
+000128 0E09           00203     MOVLW   0x09
+00012A 6520           00204     CPFSGT  InA, 1              ; skip next if InA > 9
+00012C EF?? F???      00205     GOTO    BCD_LESS10
                       00206     ; InA > 9
-000138 0E06           00207     MOVLW   0x06
-00013A 2620           00208     ADDWF   InA, F              ; InA += 6  (now packed BCD)
-00013C C020 F022      00209     MOVFF   InA, Result
-000140 C022 FF82      00210     MOVFF   Result, PORTC
+000130 0E06           00207     MOVLW   0x06
+000132 2620           00208     ADDWF   InA, F              ; InA += 6  (now packed BCD)
+000134 C020 F022      00209     MOVFF   InA, Result
+000138 C022 FF82      00210     MOVFF   Result, PORTC
                       00211 
-000144 9083           00212     BCF     PORTD,0
-000146 E0??           00213     BZ      ZSET_BCDG
-000148 0012           00214     RETURN
-00014A                00215 ZSET_BCDG:
-00014A 8083           00216     BSF     PORTD,0
-00014C 0012           00217     RETURN
+00013C 9083           00212     BCF     PORTD,0
+00013E E0??           00213     BZ      ZSET_BCDG
+000140 0012           00214     RETURN
+000142                00215 ZSET_BCDG:
+000142 8083           00216     BSF     PORTD,0
+000144 0012           00217     RETURN
                       00218 
-00014E                00219 BCD_LESS10:
-00014E C020 F022      00220     MOVFF   InA, Result         ; already 0..9 -> same in BCD
-000152 C022 FF82      00221     MOVFF   Result, PORTC
+000146                00219 BCD_LESS10:
+000146 C020 F022      00220     MOVFF   InA, Result         ; already 0..9 -> same in BCD
+00014A C022 FF82      00221     MOVFF   Result, PORTC
                       00222 
-000156 9083           00223     BCF     PORTD,0
-000158 E0??           00224     BZ      ZSET_BCDL
-00015A 0012           00225     RETURN
-00015C                00226 ZSET_BCDL:
-00015C 8083           00227     BSF     PORTD,0
-00015E 0012           00228     RETURN
+00014E 9083           00223     BCF     PORTD,0
+000150 E0??           00224     BZ      ZSET_BCDL
+000152 0012           00225     RETURN
+000154                00226 ZSET_BCDL:
+000154 8083           00227     BSF     PORTD,0
+000156 0012           00228     RETURN
                       00229 
                       00230     END
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE  6
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE  6
 
 
 SYMBOL TABLE
@@ -312,7 +312,7 @@ AN9                               00000003
 BANKED                            00000001
 BAUDCON                           00000FB8
 BAUDCTL                           00000FB8
-BCD_LESS10                        0000014E
+BCD_LESS10                        00000146
 BCLIE                             00000003
 BCLIF                             00000003
 BCLIP                             00000003
@@ -327,7 +327,7 @@ C1INV                             00000004
 C1OUT                             00000006
 C2INV                             00000005
 C2OUT                             00000007
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE  7
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE  7
 
 
 SYMBOL TABLE
@@ -386,7 +386,7 @@ CVR1                              00000001
 CVR2                              00000002
 CVR3                              00000003
 CVRCON                            00000FB5
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE  8
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE  8
 
 
 SYMBOL TABLE
@@ -445,7 +445,7 @@ GO                                00000001
 GO_DONE                           00000001
 GO_NOT_DONE                       00000001
 HLVDCON                           00000FD2
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE  9
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE  9
 
 
 SYMBOL TABLE
@@ -504,7 +504,7 @@ IVRST                             00000005
 InA                               00000020
 InB                               00000021
 KBI0                              00000004
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE 10
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE 10
 
 
 SYMBOL TABLE
@@ -563,7 +563,7 @@ LVDL0                             00000000
 LVDL1                             00000001
 LVDL2                             00000002
 LVDL3                             00000003
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE 11
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE 11
 
 
 SYMBOL TABLE
@@ -622,7 +622,7 @@ PDC0                              00000000
 PDC1                              00000001
 PDC2                              00000002
 PDC3                              00000003
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE 12
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE 12
 
 
 SYMBOL TABLE
@@ -681,7 +681,7 @@ PSP7                              00000007
 PSPIE                             00000007
 PSPIF                             00000007
 PSPIP                             00000007
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE 13
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE 13
 
 
 SYMBOL TABLE
@@ -740,7 +740,7 @@ RD3                               00000003
 RD4                               00000004
 RD5                               00000005
 RD6                               00000006
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE 14
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE 14
 
 
 SYMBOL TABLE
@@ -799,7 +799,7 @@ SSPM3                             00000003
 SSPOV                             00000006
 SSPSTAT                           00000FC7
 START                             00000000
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE 15
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE 15
 
 
 SYMBOL TABLE
@@ -816,11 +816,11 @@ STKPTR3                           00000003
 STKPTR4                           00000004
 STKUNF                            00000006
 SUB_ADD                           000000B2
-SUB_AND                           0000010C
-SUB_BCD                           0000012A
+SUB_AND                           00000106
+SUB_BCD                           00000122
 SUB_COMP                          00000098
-SUB_OR                            000000EE
-SUB_XOR                           000000D0
+SUB_OR                            000000EA
+SUB_XOR                           000000CE
 SWDTE                             00000000
 SWDTEN                            00000000
 SYNC                              00000004
@@ -858,7 +858,7 @@ T3CKPS0                           00000004
 T3CKPS1                           00000005
 T3CON                             00000FB1
 T3SYNC                            00000002
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE 16
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE 16
 
 
 SYMBOL TABLE
@@ -917,7 +917,7 @@ TRISA4                            00000004
 TRISA5                            00000005
 TRISA6                            00000006
 TRISA7                            00000007
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE 17
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE 17
 
 
 SYMBOL TABLE
@@ -976,7 +976,7 @@ VCFG1                             00000005
 VDIRMAG                           00000007
 VPP                               00000003
 W                                 00000000
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE 18
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE 18
 
 
 SYMBOL TABLE
@@ -990,13 +990,13 @@ WREN                              00000002
 WRERR                             00000003
 WUE                               00000001
 Z                                 00000002
-ZSET_ADD                          000000CC
-ZSET_AND                          00000126
-ZSET_BCDG                         0000014A
-ZSET_BCDL                         0000015C
+ZSET_ADD                          000000CA
+ZSET_AND                          0000011E
+ZSET_BCDG                         00000142
+ZSET_BCDL                         00000154
 ZSET_COMP                         000000AE
-ZSET_OR                           00000108
-ZSET_XOR                          000000EA
+ZSET_OR                           00000102
+ZSET_XOR                          000000E6
 _BOREN_NOSLP_2L                   000000FD
 _BOREN_OFF_2L                     000000F9
 _BOREN_ON_2L                      000000FB
@@ -1035,7 +1035,7 @@ _DEBUG_ON_4L                      0000007F
 _DEVID1                           003FFFFE
 _DEVID2                           003FFFFF
 _EBTR0_OFF_7L                     000000FF
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE 19
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE 19
 
 
 SYMBOL TABLE
@@ -1094,7 +1094,7 @@ _WDTPS_256_2H                     000000F1
 _WDTPS_2_2H                       000000E3
 _WDTPS_32768_2H                   000000FF
 _WDTPS_32_2H                      000000EB
-MPASM 5.77                        LAB4P8.ASM   9-23-2025  19:05:42         PAGE 20
+MPASM 5.77                        LAB4P8.ASM   9-30-2025  15:48:38         PAGE 20
 
 
 SYMBOL TABLE

@@ -125,7 +125,7 @@ SUB_ADD:
     MOVF    PORTB, W
     ANDLW   0x0F                ; W = InB
     ADDWF   InA, W              ; W = InA + InB
-    ANDLW   0x0F                ; keep 4 bits, Z from ANDLW
+                  ; keep 4 bits, Z from ANDLW
     MOVWF   Result
     MOVFF   Result, PORTC
 
@@ -144,7 +144,7 @@ SUB_XOR:
     MOVF    PORTB, W
     ANDLW   0x0F                ; W = InB
     XORWF   InA, W              ; W = InA ^ InB  (Z set by XORWF)
-    ANDLW   0x0F
+  
     MOVWF   Result
     MOVFF   Result, PORTC
 
@@ -163,7 +163,7 @@ SUB_OR:
     MOVF    PORTB, W
     ANDLW   0x0F                ; W = InB
     IORWF   InA, W              ; W = InA | InB  (Z set by IORWF)
-    ANDLW   0x0F
+   
     MOVWF   Result
     MOVFF   Result, PORTC
 
@@ -182,7 +182,7 @@ SUB_AND:
     MOVF    PORTB, W
     ANDLW   0x0F                ; W = InB
     ANDWF   InA, W              ; W = InA & InB  (Z set by ANDWF)
-    ANDLW   0x0F
+   
     MOVWF   Result
     MOVFF   Result, PORTC
 
