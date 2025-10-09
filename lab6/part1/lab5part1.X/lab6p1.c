@@ -10,15 +10,6 @@
 
 #define delay 17000               // Delay value for delay routine
 
-// RGB LED D1 color definitions
-#define D1_RED    PORTEbits.RE0
-#define D1_GREEN  PORTEbits.RE1
-#define D1_BLUE   PORTEbits.RE2
-
-// RGB LED D2 color definitions
-#define D2_RED    PORTCbits.RC2
-#define D2_GREEN  PORTCbits.RC3
-#define D2_BLUE   PORTCbits.RC4
 
 // 7-segment display decimal point
 #define SEC_LED PORTDbits.RD7
@@ -67,7 +58,7 @@ void Wait_One_Second ()
 
 void Wait_Half_Second ()
 {
-    T0CON = 0x03 // Timer 0, 16-bit mode, prescaler 1:16
+    T0CON = 0x03; // Timer 0, 16-bit mode, prescaler 1:16
     TMR0L = 0xEE; // set the lower byte of TMR
     TMR0H = 0x85; // set the upper byte of TMR
     INTCONbits.TMR0IF = 0; // clear the Timer 0 flag
@@ -93,6 +84,13 @@ char I;
  }
 } 
 
+//switches
+#define NSPED_SW PORTAbits.RA3
+#define EWPED_SW PORTAbits.RA4
+#define NSLT_SW PORTAbits.RA5
+#define EWLT_SW PORTCbits.RC0
+
+//outputs
 #define NS_RED PORTAbits.RA1
 #define NS_GREEN PORTAbits.RA2     
 #define EW_RED PORTCbits.RC4
@@ -107,6 +105,7 @@ char I;
 #define YELLOW 1
 #define UPPER_7SEG LATB
 #define LOWER_7SEG LATD
+#define MODE_LED PORTEbits.RE2
 //#define BUZZER PORTDbits.RD1
 
 void Set_NS (char color)
@@ -125,7 +124,7 @@ void set_NSLT(char color)
     switch(color)
     {
         case OFF: NSLT_RED =0;NSLT_GREEN=0;break; 
-        case RED: NSLT_RED =1;NSLT_GREEN=0;break;
+        case RED: NSLT_RED =1;NSLT_GREEN =0;break;
         case GREEN: NSLT_RED =0;NSLT_GREEN=1;break; 
         case YELLOW: NSLT_RED =1;NSLT_GREEN=1;break; 
     }
@@ -162,7 +161,7 @@ Void PED_Control (char Direction, char Num_Sec)
         while(NUM_Sec > 0)
         {
             Display_Upper(NUM_SEC - 1);
-            Wait_N_Seconds(1);
+            Wait_One_Second_With_Beep();
             Num_Sec -= 1;
         }
         Clear_Upper_Display();    
@@ -172,13 +171,14 @@ Void PED_Control (char Direction, char Num_Sec)
         while(NUM_Sec > 0)
         {
             Display_Lower(NUM_Sec - 1);
-            Wait_N_Seconds(1);
+            Wait_One_Second_With_Beep();
             Num_Sec--;
         }
         Clear_Lower_Display();
    }
 }
 
+//Buzzer implementaion
 void Wait_One_Second_With_Beep ()
 {
     SEC_LED = 1; // First, turn on the SEC LED
@@ -201,16 +201,173 @@ void Deactivate_Buzzer()
     PORTCbits.RC1 = 0;
 }
 
-int main()
+void Night_Mode()
 {
-    TRISA = 0xFF;
-    TRISB = 0x00;
-    TRISC = 0x00;
-    TRISD = 0x00;
-    TRISE = 0x00;
-    
+    UPPER_7SEG=0;
+    LOWER_7SEG=0;
+    MODE_LED = 0;
     while(1)
     {
-        EW_Green
+        set_EW(RED);
+        set_EWLD(RED);
+        set_NSLT(RED);
+        set_NS(GREEN);
+        Wait_N_Seconds(1);
+
+        set_EW(OFF);
+        set_EWLD(OFF);
+        set_NSLT(OFF);
+        set_NS(OFF);
+        Wait_N_Seconds(1);
+        
+        WAIT_N_Seconds(6);
+
+        set_NS(YELLOW);
+        WAIT__N_SECONDS(3);
+
+        set_NS(RED);
+        if(EWLT_SW == 1)
+        {
+            set_EWLT(GREEN);
+            WAIT_N_SECONDS(7);
+            set_EWLT(YELLOW);
+            WAIT_N_SECONDS(3);
+            set_EWLT(RED);
+
+            set_EW(GREEN);
+            WAIT_N_SECONDS(6);
+            set_EW(YELLOW);
+            WAIT__N_SECONDS(3);
+            set_EW(RED);   
+
+        }
+        else
+        {
+            set_EW(GREEN);
+            WAIT_N_SECONDS(6);
+            set_EW(YELLOW);
+            WAIT__N_SECONDS(3);
+            set_EW(RED);   
+
+        }
+        if(NSLT_SW == 1)
+        {
+            set_NSLT(GREEN);
+            WAIT__N_SECONDS(8);
+            set_NSLT(YELLOW);
+            WAIT_N_SECONDS(3);
+            set_NSLT(RED);
+        }
+        else
+        {
+             set_NSLT(RED);
+        }
     }
+
+    void Day_Mode()
+    {
+        MODE_LED = 1;
+        set_EW(RED);
+        set_EWLT(RED);
+        set_NSLT(RED);
+        set_NS(GREEN);
+
+        if(NSPED_SW == 1)
+        {
+            PED_Control(NS_GREEN, 8);
+            WAIT__N_SECONDS(7);
+            set_NS(YELLOW);
+            WAIT__N_SECONDS(3);
+            set_NS(RED);
+        }
+        else
+        {
+            WAIT__N_SECONDS(7);
+            set_NS(YELLOW);
+            WAIT__N_SECONDS(3);
+            set_NS(RED);
+        }
+        if(EWLT_SW == 1)
+        {
+            set_EWLT(GREEN);
+            WAIT__N_SECONDS(8);
+            set_EWLT(YELLOW);
+            WAIT__N_SECONDS(3);
+            set_EWLT(RED);
+        }
+        else
+        {
+            set_EW(GREEN);
+            if(EWPED_SW == 1)
+            {
+                PED_Control(EW_GREEN, 8);
+                set_EW(GREEN);
+                WAIT__N_SECONDS(6);
+                set_EW(YELLOW);
+                WAIT__N_SECONDS(3);
+                set_EW(RED);
+            }
+            else{
+                set_EW(GREEN);
+                WAIT__N_SECONDS(6);
+                set_EW(YELLOW);
+                WAIT__N_SECONDS(3);
+                set_EW(RED);
+            }
+        }
+    }
+    if(NSLT_SW == 1)
+    {
+        set_NSLT(GREEN);
+        WAIT__N_SECONDS(7);
+        set_NSLT(YELLOW);
+        WAIT__N_SECONDS(3);
+        set_NSLT(RED);
+
+    }else{break;}
+
+}
+
+//ADC functions
+void Init_ADC(void) {
+    ADCON0 = 0x01;
+    ADCON1 = 0x0E;
+    ADCON2 = 0xA9;
+}
+unsigned int get_full_ADC(void) {
+    ADCON0bits.GO = 1;
+    while (ADCON0bits.DONE == 1); // wait until done
+    return (ADRESH << 8) + ADRESL;
+}
+void Init_TRIS(void) {
+    TRISA = 0xFF;   // RA0 input (photo sensor)
+    TRISB = 0x00;   // 7-seg lower digit output
+    TRISD = 0x00;   // 7-seg upper digit output
+}
+
+
+int main()
+{
+   Init_TRIS();
+   init_UART();
+   Init_ADC();
+
+   while(1)
+   {
+        unsigned int adc_value = get_full_ADC();    
+        float voltage_mv = adc_value * 4.8828;
+        float voltage_v = adc_value * 0.0048828;
+
+        if(voltage_v > 2.50){
+            
+            Day_Mode();
+        }
+        else{
+            Night_Mode();
+        }
+         
+
+   }
+
+   
 }
