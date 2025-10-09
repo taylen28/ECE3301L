@@ -13,6 +13,13 @@
 
 // 7-segment display decimal point
 #define SEC_LED PORTDbits.RD7
+// === Function prototypes ===
+void Wait_Half_Second(void);
+void Wait_One_Second(void);
+void Wait_N_Seconds(char seconds);
+void Wait_One_Second_With_Beep(void);
+void Activate_Buzzer(void);
+void Deactivate_Buzzer(void);
 
 const char seven_seg_table[10] = {
     0xC0, // 0
@@ -47,6 +54,17 @@ void Clear_Lower_Display(void)
     PORTC = 0xFF;
 }
 
+void Wait_Half_Second ()
+{
+    T0CON = 0x03;
+    TMR0L = 0xEE;
+    TMR0H = 0x85;
+    INTCONbits.TMR0IF = 0;
+    T0CONbits.TMR0ON = 1;   
+    while (INTCONbits.TMR0IF == 0);
+    T0CONbits.TMR0ON = 0;
+}
+
 
 void Wait_One_Second ()
 {
@@ -56,16 +74,7 @@ void Wait_One_Second ()
     Wait_Half_Second (); // Wait for half second (or 500 msec)
 }
 
-void Wait_Half_Second ()
-{
-    T0CON = 0x03; // Timer 0, 16-bit mode, prescaler 1:16
-    TMR0L = 0xEE; // set the lower byte of TMR
-    TMR0H = 0x85; // set the upper byte of TMR
-    INTCONbits.TMR0IF = 0; // clear the Timer 0 flag
-    T0CONbits.TMR0ON = 1; // Turn on the Timer 0
-    while (INTCONbits.TMR0IF == 0); // wait for the Timer Flag to be 1 for done
-    T0CONbits.TMR0ON = 0; // turn off the Timer 0
-}
+
 
 void init_UART ()
 {
@@ -101,14 +110,14 @@ char I;
 #define NSLT_GREEN PORTCbits.RC3
 #define OFF 0
 #define RED 1
-#define GREEN 1
-#define YELLOW 1
-#define UPPER_7SEG LATB
-#define LOWER_7SEG LATD
+#define GREEN 2
+#define YELLOW 3
+#define UPPER_7SEG PORTB
+#define LOWER_7SEG PORTD
 #define MODE_LED PORTEbits.RE2
 //#define BUZZER PORTDbits.RD1
 
-void Set_NS (char color)
+void set_NS (char color)
 {
  switch (color)
  {
@@ -154,13 +163,13 @@ void set_EWLT(char color)
 
 
 
-Void PED_Control (char Direction, char Num_Sec) 
+void PED_Control (char Direction, char Num_Sec) 
 {
    if(Direction == 0)
    {
-        while(NUM_Sec > 0)
+        while(Num_Sec > 0)
         {
-            Display_Upper(NUM_SEC - 1);
+            Display_Upper(Num_Sec - 1);
             Wait_One_Second_With_Beep();
             Num_Sec -= 1;
         }
@@ -168,9 +177,9 @@ Void PED_Control (char Direction, char Num_Sec)
    }
    else
    {
-        while(NUM_Sec > 0)
+        while(Num_Sec > 0)
         {
-            Display_Lower(NUM_Sec - 1);
+            Display_Lower(Num_Sec - 1);
             Wait_One_Second_With_Beep();
             Num_Sec--;
         }
@@ -182,7 +191,7 @@ Void PED_Control (char Direction, char Num_Sec)
 void Wait_One_Second_With_Beep ()
 {
     SEC_LED = 1; // First, turn on the SEC LED
-    Activate_Buzzer () // Activate the buzzer
+    Activate_Buzzer (); // Activate the buzzer
     Wait_Half_Second (); // Wait for half second (or 500 msec)
     SEC_LED = 0; // then turn off the SEC LED
     Deactivate_Buzzer (); // Deactivate the buzzer
@@ -203,130 +212,150 @@ void Deactivate_Buzzer()
 
 void Night_Mode()
 {
-    UPPER_7SEG=0;
-    LOWER_7SEG=0;
+    // Step 0: Turn off pedestrian displays and mode LED
+    UPPER_7SEG = 0;
+    LOWER_7SEG = 0;
     MODE_LED = 0;
-    while(1)
+
+    // === Step 1: Initial state ===
+    set_EW(RED);       // EW RED
+    set_EWLT(RED);     // EWLT RED
+    set_NSLT(RED);     // NSLT RED
+    set_NS(GREEN);     // NS GREEN
+
+    // === Step 2: NS stays GREEN for 6 sec ===
+    Wait_N_Seconds(6);
+
+    // === Step 3: NS YELLOW for 3 sec ===
+    set_NS(YELLOW);
+    Wait_N_Seconds(3);
+
+    // === Step 4: NS RED ===
+    set_NS(RED);
+
+    // === Step 5: Check EWLT_SW ===
+    if (EWLT_SW == 1)
     {
-        set_EW(RED);
-        set_EWLD(RED);
-        set_NSLT(RED);
-        set_NS(GREEN);
-        Wait_N_Seconds(1);
+        // Step 6: EWLT GREEN for 7 sec
+        set_EWLT(GREEN);
+        Wait_N_Seconds(7);
 
-        set_EW(OFF);
-        set_EWLD(OFF);
-        set_NSLT(OFF);
-        set_NS(OFF);
-        Wait_N_Seconds(1);
-        
-        WAIT_N_Seconds(6);
+        // Step 7: EWLT YELLOW for 3 sec
+        set_EWLT(YELLOW);
+        Wait_N_Seconds(3);
 
-        set_NS(YELLOW);
-        WAIT__N_SECONDS(3);
-
-        set_NS(RED);
-        if(EWLT_SW == 1)
-        {
-            set_EWLT(GREEN);
-            WAIT_N_SECONDS(7);
-            set_EWLT(YELLOW);
-            WAIT_N_SECONDS(3);
-            set_EWLT(RED);
-
-            set_EW(GREEN);
-            WAIT_N_SECONDS(6);
-            set_EW(YELLOW);
-            WAIT__N_SECONDS(3);
-            set_EW(RED);   
-
-        }
-        else
-        {
-            set_EW(GREEN);
-            WAIT_N_SECONDS(6);
-            set_EW(YELLOW);
-            WAIT__N_SECONDS(3);
-            set_EW(RED);   
-
-        }
-        if(NSLT_SW == 1)
-        {
-            set_NSLT(GREEN);
-            WAIT__N_SECONDS(8);
-            set_NSLT(YELLOW);
-            WAIT_N_SECONDS(3);
-            set_NSLT(RED);
-        }
-        else
-        {
-             set_NSLT(RED);
-        }
-    }
-
-    void Day_Mode()
-    {
-        MODE_LED = 1;
-        set_EW(RED);
+        // Step 8: EWLT RED
         set_EWLT(RED);
-        set_NSLT(RED);
-        set_NS(GREEN);
-
-        if(NSPED_SW == 1)
-        {
-            PED_Control(NS_GREEN, 8);
-            WAIT__N_SECONDS(7);
-            set_NS(YELLOW);
-            WAIT__N_SECONDS(3);
-            set_NS(RED);
-        }
-        else
-        {
-            WAIT__N_SECONDS(7);
-            set_NS(YELLOW);
-            WAIT__N_SECONDS(3);
-            set_NS(RED);
-        }
-        if(EWLT_SW == 1)
-        {
-            set_EWLT(GREEN);
-            WAIT__N_SECONDS(8);
-            set_EWLT(YELLOW);
-            WAIT__N_SECONDS(3);
-            set_EWLT(RED);
-        }
-        else
-        {
-            set_EW(GREEN);
-            if(EWPED_SW == 1)
-            {
-                PED_Control(EW_GREEN, 8);
-                set_EW(GREEN);
-                WAIT__N_SECONDS(6);
-                set_EW(YELLOW);
-                WAIT__N_SECONDS(3);
-                set_EW(RED);
-            }
-            else{
-                set_EW(GREEN);
-                WAIT__N_SECONDS(6);
-                set_EW(YELLOW);
-                WAIT__N_SECONDS(3);
-                set_EW(RED);
-            }
-        }
     }
-    if(NSLT_SW == 1)
+
+    // === Step 9: EW GREEN for 6 sec ===
+    set_EW(GREEN);
+    Wait_N_Seconds(6);
+
+    // === Step 10: EW YELLOW for 3 sec ===
+    set_EW(YELLOW);
+    Wait_N_Seconds(3);
+
+    // === Step 11: EW RED ===
+    set_EW(RED);
+
+    // === Step 12: Check NSLT_SW ===
+    if (NSLT_SW == 1)
     {
+        // Step 13: NSLT GREEN for 8 sec
         set_NSLT(GREEN);
-        WAIT__N_SECONDS(7);
+        Wait_N_Seconds(8);
+
+        // Step 14: NSLT YELLOW for 3 sec
         set_NSLT(YELLOW);
-        WAIT__N_SECONDS(3);
+        Wait_N_Seconds(3);
+
+        // Step 15: NSLT RED
         set_NSLT(RED);
+    }
 
-    }else{break;}
-
+    // === Step 16: Night cycle complete ===
+    // Function ends ? main() will call Night_Mode() again if still dark
 }
+
+void Day_Mode(void)
+{
+    // Step 1: Turn on MODE LED and set initial states
+    MODE_LED = 1;
+    set_EW(RED);
+    set_EWLT(RED);
+    set_NSLT(RED);
+    set_NS(GREEN);
+
+    // Step 2: Check NSPED_SW
+    if (NSPED_SW == 1)
+    {
+        PED_Control(0, 8);       // 0 = NS direction pedestrian countdown
+    }
+
+    // Step 3: Wait 7 seconds with NS green
+    Wait_N_Seconds(7);
+
+    // Step 4: NS yellow for 3 seconds
+    set_NS(YELLOW);
+    Wait_N_Seconds(3);
+
+    // Step 5: NS red
+    set_NS(RED);
+
+    // Step 6: Check EWLT_SW
+    if (EWLT_SW == 1)
+    {
+        // Step 7: EWLT green for 8 seconds
+        set_EWLT(GREEN);
+        Wait_N_Seconds(8);
+
+        // Step 8: EWLT yellow for 3 seconds
+        set_EWLT(YELLOW);
+        Wait_N_Seconds(3);
+
+        // Step 9: EWLT red
+        set_EWLT(RED);
+    }
+
+    // Step 10: EW green
+    set_EW(GREEN);
+
+    // Step 10a: Check EWPED_SW
+    if (EWPED_SW == 1)
+    {
+        PED_Control(1, 8);      // 1 = EW direction pedestrian countdown
+    }
+
+    // Step 11: EW stays green for 6 seconds
+    Wait_N_Seconds(6);
+
+    // Step 12: EW yellow for 3 seconds
+    set_EW(YELLOW);
+    Wait_N_Seconds(3);
+
+    // Step 13: EW red
+    set_EW(RED);
+
+    // Step 14: Check NSLT_SW
+    if (NSLT_SW == 1)
+    {
+        // Step 15: NSLT green for 7 seconds
+        set_NSLT(GREEN);
+        Wait_N_Seconds(7);
+
+        // Step 16: NSLT yellow for 3 seconds
+        set_NSLT(YELLOW);
+        Wait_N_Seconds(3);
+
+        // Step 17: NSLT red
+        set_NSLT(RED);
+    }
+
+    // Step 18: Done ? Day_Mode sequence complete
+}
+
+
 
 //ADC functions
 void Init_ADC(void) {
@@ -343,6 +372,7 @@ void Init_TRIS(void) {
     TRISA = 0xFF;   // RA0 input (photo sensor)
     TRISB = 0x00;   // 7-seg lower digit output
     TRISD = 0x00;   // 7-seg upper digit output
+    TRISCbits.TRISC1 = 0;
 }
 
 
@@ -355,7 +385,7 @@ int main()
    while(1)
    {
         unsigned int adc_value = get_full_ADC();    
-        float voltage_mv = adc_value * 4.8828;
+//        float voltage_mv = adc_value * 4.8828;
         float voltage_v = adc_value * 0.0048828;
 
         if(voltage_v > 2.50){
@@ -365,8 +395,7 @@ int main()
         else{
             Night_Mode();
         }
-         
-
+        
    }
 
    
