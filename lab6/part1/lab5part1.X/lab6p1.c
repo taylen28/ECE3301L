@@ -21,222 +21,196 @@
 #define D2_BLUE   PORTCbits.RC4
 
 // 7-segment display decimal point
-#define DP PORTDbits.RD7
+#define SEC_LED PORTDbits.RD7
 
-// Array for 7-segment display digits (0-9)
-const char LED_7seg[10] = {0x01, 0x4F, 0x12, 0x06, 0x4C, 0x24, 0x20, 0x0F, 0x00, 0x04};
+const char seven_seg_table[10] = {
+    0xC0, // 0
+    0xF9, // 1
+    0xA4, // 2
+    0xB0, // 3
+    0x99, // 4
+    0x92, // 5
+    0x82, // 6
+    0xF8, // 7
+    0x80, // 8
+    0x90  // 9
+};
 
-/*************************************************************/ 
-/*                          Prototype Area                   */ 
-/*************************************************************/
-void putch(char c);
-void Init_UART(void);
-void Init_ADC(void);
-void Init_TRIS(void);
-void Select_ADC_Channel(char channel);
-unsigned int get_full_ADC(void);
-void Display_7Seg(float voltage);
-void set_D1_color(float resistance);
-void set_D2_color(float resistance);
-
-void Activate_Buzzer(void);
-void Deactivate_Buzzer(void);
-
-void SET_D1_RED(void);
-void SET_D1_GREEN(void);
-void SET_D1_BLUE(void);
-void SET_D1_YELLOW(void);
-void SET_D1_CYAN(void);
-void SET_D1_PURPLE(void);
-void SET_D1_WHITE(void);
-void SET_D1_OFF(void);
-
-void SET_D2_RED(void);
-void SET_D2_GREEN(void);
-void SET_D2_BLUE(void);
-void SET_D2_YELLOW(void);
-void SET_D2_CYAN(void);
-void SET_D2_PURPLE(void);
-void SET_D2_WHITE(void);
-void SET_D2_OFF(void);
-
-void Delay_One_Sec(void);
-
-/****************************************************************************/ 
-/*                         putch(char): Function to output text to Tera Term */
-/****************************************************************************/
-void putch(char c) {
-    while (!TRMT);   // Wait for transmit register to be empty
-    TXREG = c;       // Load the character into the transmit register
-}
-
-/*****************************************************************/ 
-/*                      Init_UART(): Function to initialize UART */
-/*****************************************************************/
-void Init_UART() {
-    OpenUSART(USART_TX_INT_OFF & USART_RX_INT_OFF & USART_ASYNCH_MODE &
-              USART_EIGHT_BIT & USART_CONT_RX & USART_BRGH_HIGH, 25);
-    OSCCON = 0x60;   // Configure internal oscillator to 4 MHz
-}
-
-/***************************************************************/ 
-/*                      Init_ADC(): Function to initialize ADC */
-/***************************************************************/
-void Init_ADC() {
-    ADCON0 = 0x01;   // Select AN0, turn ADC on
-    ADCON1 = 0x1A;   // Configure AN0-AN3 as analog, others digital
-    ADCON2 = 0xA9;   // Right justified
-}
-
-/****************************************************************************/ 
-/*                    Init_TRIS(void): Function to initialize TRIS registers*/
-/****************************************************************************/
-void Init_TRIS(void) {
-    TRISA = 0xFF;    // Sets Port A to input 
-    TRISB = 0x00;    // Sets Port B to output 
-    TRISC = 0x00;    // Sets Port C to output 
-    TRISD = 0x00;    // Sets Port D to output 
-    TRISE = 0x00;    // Sets Port E to output 
-}
-
-/**********************************************************************************/ 
-/*                Select_ADC_Channel(char): Select ADC channel for reading voltage */
-/**********************************************************************************/
-void Select_ADC_Channel(char channel) {
-    ADCON0 = channel * 4 + 1;   // Set ADC channel and enable ADC
-}
-
-/**********************************************************************/ 
-/*                     get_full_ADC(void): Read ADC value from channel */
-/**********************************************************************/
-unsigned int get_full_ADC(void) {
-    int result;	
-    ADCON0bits.GO = 1;           // Start ADC conversion
-    while (ADCON0bits.DONE);     // Wait for conversion to complete
-    result = (ADRESH * 0x100) + ADRESL;  // Combine high and low bytes
-    return result;
-}
-
-/**********************************************************************/ 
-/*                   Display_7Seg(float): Display voltage on 7-segment */
-/**********************************************************************/
-void Display_7Seg(float voltage) {
-    int upper = (int) voltage;               // Extract whole number part
-    int lower = (int) ((voltage - upper) * 10); // Extract decimal part
-    PORTD = LED_7seg[upper];   // Display upper digit
-    PORTB = LED_7seg[lower];   // Display lower digit
-}
-
-/*************************************************************/ 
-/*             set_D1_color(float): Set RGB LED D1 color      */
-/*************************************************************/
-void set_D1_color(float resistance) {
-    int range = (int) (resistance / 10); // Get resistance range in tens
-    if (range >= 0 && range < 7)  
-        PORTE = range;            // Output corresponding color
-    else
-        PORTE = 0x07;             // Display white for 70k+ resistance
-}
-
-/*************************************************************/ 
-/*             set_D2_color(float): Set RGB LED D2 color      */
-/*************************************************************/
-void set_D2_color(float resistance) 
+void Display_Upper(char num)
 {
-    if (resistance > 0.3) {
-        SET_D2_OFF();    // Greater than 0.3K - Turn off LED
-    } else if (resistance >= 0.2 && resistance <= 0.3) {
-        SET_D2_RED();    // 0.2K - 0.3K - Red
-    } else if (resistance >= 0.1 && resistance < 0.2) {
-        SET_D2_GREEN();  // 0.1K - 0.2K - Green
-    } else if (resistance >= 0.07 && resistance < 0.1) {
-        SET_D2_BLUE();   // 0.07K - 0.1K - Blue
-    } else {
-        SET_D2_WHITE();  // Less than 0.07K - White
+    PORTD = seven_seg_table[num];   // display number on upper 7-segment
+}
+
+void Display_Lower(char num)
+{
+    PORTC = seven_seg_table[num];   // display number on lower 7-segment
+}
+
+void Clear_Upper_Display(void)
+{
+    PORTD = 0xFF;   // all segments off (common-anode)
+}
+
+void Clear_Lower_Display(void)
+{
+    PORTC = 0xFF;
+}
+
+
+void Wait_One_Second ()
+{
+    SEC_LED = 1; // First, turn on the SEC LED
+    Wait_Half_Second (); // Wait for half second (or 500 msec)
+    SEC_LED = 0; // then turn off the SEC LED
+    Wait_Half_Second (); // Wait for half second (or 500 msec)
+}
+
+void Wait_Half_Second ()
+{
+    T0CON = 0x03 // Timer 0, 16-bit mode, prescaler 1:16
+    TMR0L = 0xEE; // set the lower byte of TMR
+    TMR0H = 0x85; // set the upper byte of TMR
+    INTCONbits.TMR0IF = 0; // clear the Timer 0 flag
+    T0CONbits.TMR0ON = 1; // Turn on the Timer 0
+    while (INTCONbits.TMR0IF == 0); // wait for the Timer Flag to be 1 for done
+    T0CONbits.TMR0ON = 0; // turn off the Timer 0
+}
+
+void init_UART ()
+{
+    OpenUSART (USART_TX_INT_OFF & USART_RX_INT_OFF &
+    USART_ASYNCH_MODE & USART_EIGHT_BIT & USART_CONT_RX &
+    USART_BRGH_HIGH, 25);
+    OSCCON = 0x70;
+}
+
+void Wait_N_Seconds (char seconds)
+{
+char I;
+ for (I = 0; I< seconds; I++)
+ {
+ Wait_One_Second ();
+ }
+} 
+
+#define NS_RED PORTAbits.RA1
+#define NS_GREEN PORTAbits.RA2     
+#define EW_RED PORTCbits.RC4
+#define EW_GREEN PORTCbits.RC5
+#define EWLT_RED PORTBbits.RB7
+#define EWLT_GREEN PORTEbits.RE0
+#define NSLT_RED PORTCbits.RC2
+#define NSLT_GREEN PORTCbits.RC3
+#define OFF 0
+#define RED 1
+#define GREEN 1
+#define YELLOW 1
+#define UPPER_7SEG LATB
+#define LOWER_7SEG LATD
+//#define BUZZER PORTDbits.RD1
+
+void Set_NS (char color)
+{
+ switch (color)
+ {
+ case OFF: NS_RED =0;NS_GREEN=0;break; // Turns off the NS LED
+ case RED: NS_RED =1;NS_GREEN=0;break; // Sets NS LED RED
+ case GREEN: NS_RED =0;NS_GREEN=1;break; // sets NS LED GREEN
+ case YELLOW: NS_RED =1;NS_GREEN=1;break; // sets NS LED YELLOW
+ }
+} 
+
+void set_NSLT(char color)
+{
+    switch(color)
+    {
+        case OFF: NSLT_RED =0;NSLT_GREEN=0;break; 
+        case RED: NSLT_RED =1;NSLT_GREEN=0;break;
+        case GREEN: NSLT_RED =0;NSLT_GREEN=1;break; 
+        case YELLOW: NSLT_RED =1;NSLT_GREEN=1;break; 
     }
 }
 
-/*************************************************************/ 
-/*                Activate_Buzzer(): Turn on the buzzer       */
-/*************************************************************/
-void Activate_Buzzer(void) {
-    PR2 = 0b11111001;
-    T2CON = 0b00000101;
-    CCPR2L = 0b01001010;
-    CCP2CON = 0b00111100;
+void set_EW(char color)
+{
+    switch(color)
+    {
+        case OFF: EW_RED =0;EW_GREEN=0;break; 
+        case RED: EW_RED =1;EW_GREEN=0;break;
+        case GREEN: EW_RED =0;EW_GREEN=1;break; 
+        case YELLOW: EW_RED =1;EW_GREEN=1;break; 
+    }
 }
 
-/*************************************************************/ 
-/*                Deactivate_Buzzer(): Turn off the buzzer    */
-/*************************************************************/
-void Deactivate_Buzzer(void) {
+void set_EWLT(char color)
+{
+    switch(color)
+    {
+        case OFF: EWLT_RED =0;EWLT_GREEN=0;break; 
+        case RED: EWLT_RED =1;EWLT_GREEN=0;break;
+        case GREEN: EWLT_RED =0;EWLT_GREEN=1;break; 
+        case YELLOW: EWLT_RED =1;EWLT_GREEN=1;break; 
+    }
+}
+
+
+
+Void PED_Control (char Direction, char Num_Sec) 
+{
+   if(Direction == 0)
+   {
+        while(NUM_Sec > 0)
+        {
+            Display_Upper(NUM_SEC - 1);
+            Wait_N_Seconds(1);
+            Num_Sec -= 1;
+        }
+        Clear_Upper_Display();    
+   }
+   else
+   {
+        while(NUM_Sec > 0)
+        {
+            Display_Lower(NUM_Sec - 1);
+            Wait_N_Seconds(1);
+            Num_Sec--;
+        }
+        Clear_Lower_Display();
+   }
+}
+
+void Wait_One_Second_With_Beep ()
+{
+    SEC_LED = 1; // First, turn on the SEC LED
+    Activate_Buzzer () // Activate the buzzer
+    Wait_Half_Second (); // Wait for half second (or 500 msec)
+    SEC_LED = 0; // then turn off the SEC LED
+    Deactivate_Buzzer (); // Deactivate the buzzer
+    Wait_Half_Second (); // Wait for half second (or 500 msec)
+}
+void Activate_Buzzer()
+{
+    PR2 = 0b11111001 ;
+    T2CON = 0b00000101 ;
+    CCPR2L = 0b01001010 ;
+    CCP2CON = 0b00111100 ;
+}
+void Deactivate_Buzzer()
+{
     CCP2CON = 0x0;
     PORTCbits.RC1 = 0;
 }
 
-/************************************************************************/ 
-/*                SET_D1_RGB & SET_D2_RGB color function: Activate ports*/
-/************************************************************************/
-void SET_D1_RED()    { D1_RED = 1; D1_GREEN = 0; D1_BLUE = 0; }
-void SET_D1_GREEN()  { D1_RED = 0; D1_GREEN = 1; D1_BLUE = 0; }
-void SET_D1_BLUE()   { D1_RED = 0; D1_GREEN = 0; D1_BLUE = 1; }
-void SET_D1_YELLOW() { D1_RED = 1; D1_GREEN = 1; D1_BLUE = 0; }
-void SET_D1_CYAN()   { D1_RED = 0; D1_GREEN = 1; D1_BLUE = 1; }
-void SET_D1_PURPLE() { D1_RED = 1; D1_GREEN = 0; D1_BLUE = 1; }
-void SET_D1_WHITE()  { D1_RED = 1; D1_GREEN = 1; D1_BLUE = 1; }
-void SET_D1_OFF()    { D1_RED = 0; D1_GREEN = 0; D1_BLUE = 0; }
-
-void SET_D2_RED()    { D2_RED = 1; D2_GREEN = 0; D2_BLUE = 0; }
-void SET_D2_GREEN()  { D2_RED = 0; D2_GREEN = 1; D2_BLUE = 0; }
-void SET_D2_BLUE()   { D2_RED = 0; D2_GREEN = 0; D2_BLUE = 1; }
-void SET_D2_YELLOW() { D2_RED = 1; D2_GREEN = 1; D2_BLUE = 0; }
-void SET_D2_CYAN()   { D2_RED = 0; D2_GREEN = 1; D2_BLUE = 1; }
-void SET_D2_PURPLE() { D2_RED = 1; D2_GREEN = 0; D2_BLUE = 1; }
-void SET_D2_WHITE()  { D2_RED = 1; D2_GREEN = 1; D2_BLUE = 1; }
-void SET_D2_OFF()    { D2_RED = 0; D2_GREEN = 0; D2_BLUE = 0; }
-
-/*******************************************************************/ 
-/*                     Delay_One_Sec: Creates a delay of one second */
-/*******************************************************************/
-void Delay_One_Sec() {
-    for (int i = 0; i < delay; i++);   // Delay loop
-}
-
-/*************************************************************/ 
-/*                           Main Function                    */
-/*************************************************************/
-void main() {
-    Init_UART();     // Initialize UART
-    Init_ADC();      // Initialize ADC
-    Init_TRIS();     // Initialize TRIS settings
-    float Rref = 22;  // Reference resistor (22K ohms)
-    Select_ADC_Channel(4);  // Select AN4 for measurement
+int main()
+{
+    TRISA = 0xFF;
+    TRISB = 0x00;
+    TRISC = 0x00;
+    TRISD = 0x00;
+    TRISE = 0x00;
     
-    while (1) 
-    { 
-        int num_step = get_full_ADC();
-        float volt = (num_step * 5.0)/1024;
-        float R = (volt / (5.0 - volt)) * Rref;
-        if (R < 10)
-        {
-            int upper = R;
-            int lower = (int) ((R - upper) * 10);
-            PORTD = LED_7seg[upper];
-            PORTB = LED_7seg[lower];
-            DP = 0;
-        }
-        if (R >= 10)
-        {
-            int upper = R / 10;
-            int lower = (int) (R) % 10;
-            PORTD = LED_7seg[upper];
-            PORTB = LED_7seg[lower];
-            DP = 1;
-        }
-        printf("Resistance: %f K\r\n\n", R);
-        set_D1_color(R);
-        set_D2_color(R);
-        if (R < 0.07) Activate_Buzzer(); else Deactivate_Buzzer();
-        Delay_One_Sec();
+    while(1)
+    {
+        EW_Green
     }
 }

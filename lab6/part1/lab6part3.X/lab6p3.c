@@ -1,162 +1,254 @@
-#include <p18f4620.h>
-#include <stdio.h>
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <xc.h> 
+#include <math.h> 
+#include <usart.h> 
+#include <p18f4620.h> 
+ 
+#pragma config OSC = INTIO67 
+#pragma config WDT = OFF 
+#pragma config LVP = OFF 
+#pragma config BOREN = OFF 
 
-//================ Configuration bits =================
-#pragma config OSC = INTIO67
-#pragma config WDT = OFF
-#pragma config LVP = OFF
-#pragma config BOREN = OFF
 
-//================ UART ===============================
-void init_UART(void) {
-    OSCCON = 0x60;        // 4 MHz internal oscillator
-    TRISCbits.TRISC6 = 0; // TX pin as output
-    TRISCbits.TRISC7 = 1; // RX pin as input
+// Prototype Area to place all the references to the routines used in the program 
+void Init_ADC(void);
+unsigned int get_full_ADC(void);
+void Init_TRIS();
+void select_ADC_CH(char);
+void check_buzzer(float);
+void activate_buzzer();
+void deactivate_buzzer();
+void SET_D2_RED();
+void SET_D2_GREEN();
+void SET_D2_YELLOW();
+void SET_D2_BLUE();
+void SET_D2_PURPLE();
+void SET_D2_CYAN();
+void SET_D2_WHITE();
+void SET_D2_OFF();
+void display_D1(int);
+void display_D2(float);
 
-    TXSTAbits.SYNC = 0;   // Asynchronous
-    TXSTAbits.BRGH = 1;   // High speed
-    RCSTAbits.SPEN = 1;   // Enable serial port
-    RCSTAbits.CREN = 1;   // Enable receiver
-    TXSTAbits.TXEN = 1;   // Enable transmitter
+    #define D3_RED PORTEbits.RE0 
+    #define D3_GREEN PORTEbits.RE1 
+    #define D3_BLUE PORTEbits.RE2
+    #define DP PORTDbits.RD7
 
-    SPBRG = 25;           // 9600 baud @4MHz
-    SPBRGH = 0;
-}
-void putch(char c) { while(!PIR1bits.TXIF); TXREG = c; }
+float volt;
+char LED_7seg[10] = { 0x01, 0x4F, 0x12, 0x06, 0x4C, 0x24, 0x20, 0x0F, 0x00, 0x0C };
+float R;
+unsigned int num_step;
 
-//================ ADC ================================
-void INIT_ADC(void) {
-    ADCON0 = 0x01;  // AN0 selected, ADC on
-    ADCON1 = 0x0E;  // AN0/AN1 analog, Vref=VDD/VSS
-    ADCON2 = 0xA9;  // Right justify, Tacq=8Tad, Tad=Fosc/8
-}
-void SET_ADCON0(char ch) { ADCON0 = (ch<<2) | 0x01; }
-unsigned int GET_FULL_ADC(void) {
-    ADCON0bits.GO = 1;
-    while(ADCON0bits.DONE);
-    return ((unsigned int)ADRESH<<8) + ADRESL;
-}
+//Following two functions initialize the usage of TeraTerm through a serial port
+void init_UART() 
+{ 
+    OpenUSART (USART_TX_INT_OFF & USART_RX_INT_OFF & 
+    USART_ASYNCH_MODE & USART_EIGHT_BIT & USART_CONT_RX & 
+    USART_BRGH_HIGH, 25); 
+    OSCCON = 0x60; 
+} 
 
-//================ TRIS ===============================
-void INIT_TRIS(void) {
-    TRISA = 0xFF;  // RA0, RA1 inputs
-    TRISB = 0x00;  // 7-seg lower (ones)
-    TRISC = 0x00;  // D1 & D2 RGB outputs
-    TRISD = 0x00;  // 7-seg upper (tens)
-    TRISE = 0x00;  // D3 RGB outputs
-}
-
-//================ LED DEFINES ========================
-// all LEDs common cathode: 1 = ON
-#define LED_ON   1
-#define LED_OFF  0
-
-// D1: RC0=RED, RC1=GREEN, RC2=BLUE
-#define D1_RED   PORTCbits.RC0
-#define D1_GREEN PORTCbits.RC1
-#define D1_BLUE  PORTCbits.RC2
-
-// D2: RC3=RED, RC4=GREEN, RC5=BLUE
-#define D2_RED   LATCbits.LATC3
-#define D2_GREEN LATCbits.LATC4
-#define D2_BLUE  LATCbits.LATC5
-
-// D3: RE0=RED, RE1=GREEN, RE2=BLUE
-#define D3_RED   LATEbits.LATE0
-#define D3_GREEN LATEbits.LATE1
-#define D3_BLUE  LATEbits.LATE2
-
-#define SET_RGB(LED, color) \
-    do { \
-        LED##_RED   = (color >> 2) & 1; \
-        LED##_GREEN = (color >> 1) & 1; \
-        LED##_BLUE  = (color >> 0) & 1; \
-    } while(0)
-
-//================ Delay ==============================
-void Delay_One_Sec(void){ for(long j=0;j<20000;j++); }
-
-//================ 7-Segment ==========================
-const unsigned char segmap[10] =
-{0x01,0x4F,0x12,0x06,0x4C,0x24,0x20,0x0F,0x00,0x04};
-
-void DISP_LeftDigit(unsigned char d){ LATD = segmap[d]; }  // tens
-void DISP_RightDigit(unsigned char d){ LATB = segmap[d]; } // ones
-
-//================ LED Color Logic ====================
-// ---- D1 compact ?5 lines ----
-// bit2=R, bit1=G, bit0=B  (RC0=R, RC1=G, RC2=B)
-void set_D1(int tempF){
-    const unsigned char temp_map[] = {
-        0b000, // <10
-        0b100, // 10-19 red
-        0b010, // 20-29 green
-        0b110, // 30-39 yellow
-        0b001, // 40-49 blue
-        0b101, // 50-59 purple
-        0b011, // 60-69 cyan
-        0b111  // >=70 white
-    };
-    unsigned char idx = (tempF<70) ? tempF/10 : 7;
-    SET_RGB(D1, temp_map[idx]);
+void putch (char c) 
+{ 
+    while (!TRMT); 
+    TXREG = c; 
 }
 
-// ---- D2 from lab table ----
-void set_D2(int t){
-    unsigned char c;
-    if(t<35) c=0b000;
-    else if(t<=45) c=0b001;
-    else if(t<=55) c=0b010;
-    else if(t<=65) c=0b011;
-    else if(t<=75) c=0b100;
-    else if(t<=78) c=0b101;
-    else if(t<=82) c=0b110;
-    else c=0b111;
-    D2_RED   = c & 1;
-    D2_GREEN = (c>>1)&1;
-    D2_BLUE  = (c>>2)&1;
+//function to create 1 second delay
+void wait_1_sec()
+{
+    for (int j=0; j<0xffff; j++);
 }
 
-// ---- D3 from lab table ----
-void set_D3(float mv){
-    if(mv<2600)      {D3_RED=LED_ON; D3_GREEN=LED_ON; D3_BLUE=LED_ON;}
-    else if(mv<2900) {D3_RED=LED_OFF;D3_GREEN=LED_ON; D3_BLUE=LED_ON;}
-    else if(mv<3200) {D3_RED=LED_ON; D3_GREEN=LED_ON; D3_BLUE=LED_OFF;}
-    else if(mv<3600) {D3_RED=LED_ON; D3_GREEN=LED_OFF;D3_BLUE=LED_OFF;}
-    else             {D3_RED=LED_OFF;D3_GREEN=LED_OFF;D3_BLUE=LED_OFF;}
-}
-
-//================ MAIN ===============================
-void main(void){
+void main(void) 
+{ 
     init_UART();
-    INIT_ADC();
-    INIT_TRIS();
-
-    while(1){
-        // ---- Temperature ----
-        SET_ADCON0(0);
-        unsigned int steps = GET_FULL_ADC();
-        float mv = (steps*5000.0)/1023.0;
-        float tC = (1035.0 - mv)/5.5;
-        float tF = tC*1.8 + 32.0;
-        int tempF = (int)tF;
-        if(tempF<0) tempF=0;
-
-        DISP_LeftDigit(tempF/10);
-        DISP_RightDigit(tempF%10);
-
-        set_D1(tempF);
-        set_D2(tempF);
-
-        // ---- Light ----
-        SET_ADCON0(1);
-        unsigned int lsteps = GET_FULL_ADC();
-        float lmv = (lsteps*5000.0)/1023.0;
-        set_D3(lmv);
-
-        // ---- Serial print ----
-        printf("Temp=%d F  V=%.1f mV  Light=%.1f mV\r\n", tempF, mv, lmv);
-
-        Delay_One_Sec();
+    Init_ADC();
+    Init_TRIS();
+   
+    select_ADC_CH(4);//Select Channel 4
+    while (1)
+    {
+        num_step = get_full_ADC();//get number of steps
+        
+        volt = (num_step * 4)/1000.0;//store voltage value from input
+        R = (volt / (4.096 - volt)) * 100.0;//Voltage Divider to find Resistor value
+        
+        
+             
+        
+        wait_1_sec();//wait one second
+        if(R < 10)//If R is smaller than 10K turn on decimal point and show 0-9.9K on display
+        {
+            char U = (int) R; //store upper LCD value
+            char L = (int) ((R-U) * 10);//create and store lower LCD value
+            
+            PORTB = LED_7seg[U];//display upper LCD value by outputting to portB
+            PORTD = LED_7seg[L];//Display lower LCD value by outputting to portD
+            DP = 0;     //0 is on, turn on decimal point
+        }
+            
+        else //If R is bigger than 10K turn off decimal point and show 10-99K on display
+        {
+            char U = (int)(R/10);//store upper LCD value
+            char L = (int)R % 10;//create and store lower LCD value
+            
+            PORTB = LED_7seg[U];//display upper LCD value by outputting to portB
+            PORTD = LED_7seg[L];//Display lower LCD value by outputting to portD
+            DP = 1;     //1 is off, turn off LCD
+        }
+        
+        
+        
+        printf ("Resistance = %f \r\n", R); //Display value to TeraTerm
+        check_buzzer(R);//Check if buzzer should be on or not
+        
+        display_D1(R); //Turn on RGB 1
+        display_D2(R); //Turn on RGB 2
     }
+    
+} 
+
+//Function to turn on RGB1
+void display_D1(int R)
+{
+    int range = R/10; //Divide resistance by 10
+    if(range > 7)//If resistance value is above 70K display white
+        range = 7;
+    PORTC = range<<2;//Output value to port C, which corresponds to an RGB value
+}
+
+//Function to turn on RGB2
+void display_D2(float T)
+{
+    if(T > 0.2) SET_D2_OFF();//Turn off RGB2 if resistance is greater than 200
+    else if (T >= 0.15 && T <= 0.2) SET_D2_WHITE();//Set RGB to white if  resistance is between 0.15K and 0.2K
+    else if (T >= 0.1 && T < 0.15) SET_D2_BLUE(); //Set RGB to Blue if resistance is between 0.1K and 0.15K
+    else if (T >= 0.07 && T < 0.1) SET_D2_GREEN();//Set RGB to Green if resistance is between 0.07K and 0.1K
+    else if (T < 0.07) SET_D2_RED();//Set RGB to Red if resistance is less than 0.07K
+    else SET_D2_PURPLE();//
+}
+
+//Initialize A/D converter
+void select_ADC_CH (char AN_pin) 
+{ 
+    ADCON0 = AN_pin * 4 + 1; 
+} 
+
+void Init_ADC(void) 
+{ 
+    ADCON0=0x01; // select channel AN0, and turn on the ADC subsystem 
+    ADCON1=0x1A ; // select pins AN0 through AN3 as analog signal, VDD-VSS as 
+// reference voltage 
+    ADCON2=0xA9; // right justify the result. Set the bit conversion time (TAD) and 
+// acquisition time 
+}
+
+unsigned int get_full_ADC(void) //provides number of steps in conversion.
+{ 
+    int result;
+    ADCON0bits.GO=1; // Start Conversion 
+    while(ADCON0bits.DONE==1); // wait for conversion to be completed 
+    result = (ADRESH * 0x100) + ADRESL; // combine result of upper byte and 
+// lower byte into result 
+    return result; // return the result. 
+} //multiply result by voltage per step (4mV/step)
+
+void Init_TRIS()
+{
+    TRISA =0xFF;        // make PORTA as all inputs
+    TRISB =0x00;        // make PORTB as all outputs 
+    TRISC = 0x00;       // make PORTC as all outputs
+    TRISD = 0x00;       // make PORTD as all outputs
+    TRISE = 0x00;       // make PORTE as all outputs
+}
+
+//function to set RGB led as 001 (RED)
+void SET_D2_RED() 
+{ 
+    D3_RED = 1; 
+    D3_GREEN = 0; 
+    D3_BLUE = 0; 
+}
+
+//function to set RGB led as 010 (GREEN)
+void SET_D2_GREEN() 
+{ 
+    D3_RED = 0; 
+    D3_GREEN = 1; 
+    D3_BLUE = 0; 
+} 
+
+//function to set RGB led as 011 (YELLOW)
+void SET_D2_YELLOW() 
+{ 
+    D3_RED = 1; 
+    D3_GREEN = 1; 
+    D3_BLUE = 0; 
+} 
+
+//function to set RGB led as 100 (BLUE)
+void SET_D2_BLUE() 
+{ 
+    D3_RED = 0; 
+    D3_GREEN = 0; 
+    D3_BLUE = 1; 
+} 
+
+//function to set RGB led as 101 (PURPLE)
+void SET_D2_PURPLE() 
+{ 
+    D3_RED = 1; 
+    D3_GREEN = 0; 
+    D3_BLUE = 1; 
+} 
+
+//function to set RGB led as 110 (CYAN)
+void SET_D2_CYAN() 
+{ 
+    D3_RED = 0; 
+    D3_GREEN = 1; 
+    D3_BLUE = 1; 
+} 
+
+//function to set RGB led as 111 (WHITE)
+void SET_D2_WHITE() 
+{ 
+    D3_RED = 1; 
+    D3_GREEN = 1; 
+    D3_BLUE = 1; 
+} 
+
+//function to set RGB led as 000 (OFF)
+void SET_D2_OFF() 
+{ 
+    D3_RED = 0; 
+    D3_GREEN = 0; 
+    D3_BLUE = 0; 
+} 
+
+//Function to check the value of R and turn on Buzzer if Ohms is less than .7
+void check_buzzer(float r)
+{
+    if(r<0.07)
+        activate_buzzer();
+    else
+        deactivate_buzzer();
+}
+
+//Routine to activate buzzer
+void activate_buzzer()
+{
+    PR2 = 0b1111101;
+    T2CON = 0b00000101;
+    CCPR2L = 0b01001010;
+    CCP2CON = 0b00111100;
+}
+
+//Routine to deactivate buzzer
+void deactivate_buzzer()
+{
+    CCP2CON = 0x0;
+    PORTCbits.RC1 = 0;
 }

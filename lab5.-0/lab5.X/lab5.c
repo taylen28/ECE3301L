@@ -40,12 +40,12 @@ void putch(char c) {
 //Configures input/output directions for microcontroller ports
 void Init_ADC(void) {
     ADCON0 = 0x01 * 4 + 1;
-    ADCON1 = 0x1B;
+    ADCON1 = 0x0E;
     ADCON2 = 0xA9;
 }
 
 void Init_TRIS(void) {
-    TRISA = 0x0F; // sets PORTA as input
+    TRISA = 0xFF; // sets PORTA as input
     TRISB = 0x00; // sets PORTB as output
     TRISC = 0x00; // sets PORTC as output
     TRISD = 0x00; // sets PORTD as output
