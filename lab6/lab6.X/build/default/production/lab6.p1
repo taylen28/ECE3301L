@@ -4113,12 +4113,12 @@ Version 3.2 HI-TECH Software Intermediate Code
 [; ;lab6.c: 49: {
 [e :U _Wait_Half_Second ]
 [f ]
-[; ;lab6.c: 50: T0CON = 0x03;
+[; ;lab6.c: 50: T0CON = 0x04;
 "50
-[e = _T0CON -> -> 3 `i `uc ]
-[; ;lab6.c: 51: TMR0L = 0xEE;
+[e = _T0CON -> -> 4 `i `uc ]
+[; ;lab6.c: 51: TMR0L = 0xAE;
 "51
-[e = _TMR0L -> -> 238 `i `uc ]
+[e = _TMR0L -> -> 174 `i `uc ]
 [; ;lab6.c: 52: TMR0H = 0x85;
 "52
 [e = _TMR0H -> -> 133 `i `uc ]

@@ -1,7 +1,7 @@
 
 
 Microchip Technology PIC18 LITE Macro Assembler V1.34 build -361300703 
-                                                                                               Mon Oct 13 00:09:07 2025
+                                                                                               Mon Oct 13 14:44:35 2025
 
 Microchip Technology Omniscient Code Generator (Lite mode) build 201502162209
      1                           	processor	18F4620
@@ -2332,14 +2332,14 @@ Microchip Technology Omniscient Code Generator (Lite mode) build 201502162209
   2221  001620                     _Wait_Half_Second:
   2222                           	opt stack 27
   2223                           
-  2224                           ;lab6.c: 50: T0CON = 0x03;
+  2224                           ;lab6.c: 50: T0CON = 0x04;
   2225                           
   2226                           ;incstack = 0
-  2227  001620  0E03               	movlw	3
+  2227  001620  0E04               	movlw	4
   2228  001622  6ED5               	movwf	4053,c	;volatile
   2229                           
-  2230                           ;lab6.c: 51: TMR0L = 0xEE;
-  2231  001624  0EEE               	movlw	238
+  2230                           ;lab6.c: 51: TMR0L = 0xAE;
+  2231  001624  0EAE               	movlw	174
   2232  001626  6ED6               	movwf	4054,c	;volatile
   2233                           
   2234                           ;lab6.c: 52: TMR0H = 0x85;
@@ -3062,7 +3062,7 @@ SFR                  0      0       0      40        0.0%
 
 
 Microchip Technology PIC18 Macro Assembler V1.34 build -361300703 
-Symbol Table                                                                                   Mon Oct 13 00:09:07 2025
+Symbol Table                                                                                   Mon Oct 13 14:44:35 2025
 
          _Wait_One_Second_With_Beep 1684                                  l83 1632  
                                l102 1524                                 l111 14EE  

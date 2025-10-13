@@ -5008,8 +5008,8 @@ PORTC = 0xFF;
 
 void Wait_Half_Second ()
 {
-T0CON = 0x03;
-TMR0L = 0xEE;
+T0CON = 0x04;
+TMR0L = 0xAE;
 TMR0H = 0x85;
 INTCONbits.TMR0IF = 0;
 T0CONbits.TMR0ON = 1;
