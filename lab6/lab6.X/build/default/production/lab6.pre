@@ -4983,16 +4983,7 @@ void Activate_Buzzer(void);
 void Deactivate_Buzzer(void);
 
 const char seven_seg_table[10] = {
-0xC0,
-0xF9,
-0xA4,
-0xB0,
-0x99,
-0x92,
-0x82,
-0xF8,
-0x80,
-0x90
+0xff, 0x4f, 0x12, 0x06, 0x4c,0x24,0x20,0x0f,0x00,0x04
 };
 
 void Display_Upper(char num)
@@ -5054,7 +5045,7 @@ Wait_One_Second ();
 }
 }
 
-# 120
+# 111
 void set_NS (char color)
 {
 switch (color)
@@ -5307,12 +5298,12 @@ while (ADCON0bits.DONE == 1);
 return (ADRESH << 8) + ADRESL;
 }
 void Init_TRIS(void) {
-TRISA = 0xFF;
+TRISA = 0b11100001;
 TRISB = 0x00;
+TRISC = 0x00;
 TRISD = 0x00;
-TRISCbits.TRISC1 = 0;
+TRISE = 0x00;
 }
-
 
 int main()
 {
