@@ -369,12 +369,12 @@ unsigned int get_full_ADC(void) {
     return (ADRESH << 8) + ADRESL;
 }
 void Init_TRIS(void) {
-    TRISA = 0xFF;   // RA0 input (photo sensor)
-    TRISB = 0x00;   // 7-seg lower digit output
-    TRISD = 0x00;   // 7-seg upper digit output
-    TRISCbits.TRISC1 = 0;
+    TRISA = 0b11100001;   // RA0 input (ADC), RA3-5 inputs (switches), RA1-2 outputs (NS lights)
+    TRISB = 0x00;         // RB all outputs
+    TRISC = 0x00;         // RC all outputs
+    TRISD = 0x00;         // RD all outputs
+    TRISE = 0x00;         // RE all outputs
 }
-
 
 int main()
 {
