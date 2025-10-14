@@ -3,6 +3,7 @@
 #include <math.h>
 #include <usart.h>
 
+
 #pragma config OSC = INTIO67      // Internal oscillator
 #pragma config WDT=OFF            // Watchdog Timer disabled
 #pragma config LVP=OFF            // Low-Voltage Programming disabled
@@ -67,12 +68,21 @@ void Wait_One_Second ()
 
 
 
-void init_UART ()
+void Init_UART(void)
 {
-    OpenUSART (USART_TX_INT_OFF & USART_RX_INT_OFF &
-    USART_ASYNCH_MODE & USART_EIGHT_BIT & USART_CONT_RX &
-    USART_BRGH_HIGH, 25);
-    OSCCON = 0x70;
+    OSCCON = 0x70;            // Internal osc = 8 MHz
+    TRISCbits.TRISC6 = 0;     // TX pin (RC6) as output
+    TRISCbits.TRISC7 = 1;     // RX pin (RC7) as input
+
+    OpenUSART(USART_TX_INT_OFF &
+              USART_RX_INT_OFF &
+              USART_ASYNCH_MODE &
+              USART_EIGHT_BIT &
+              USART_CONT_RX &
+              USART_BRGH_HIGH, 25);  // 9600 baud @ 8MHz
+
+    TXSTAbits.TXEN = 1;       // ? Enable transmitter
+    RCSTAbits.SPEN = 1;       // ? Enable serial port
 }
 
 void Wait_N_Seconds (char seconds)
@@ -184,7 +194,7 @@ void Wait_One_Second_With_Beep ()
     SEC_LED = 1; // First, turn on the SEC LED
     Activate_Buzzer (); // Activate the buzzer
     Wait_Half_Second (); // Wait for half second (or 500 msec)
-    SEC_LED = 0; // then turn off the SEC LED
+    SEC_LED = 0; // then turn off    the SEC LED
     Deactivate_Buzzer (); // Deactivate the buzzer
     Wait_Half_Second (); // Wait for half second (or 500 msec)
 }
@@ -200,6 +210,17 @@ void Deactivate_Buzzer()
     CCP2CON = 0x0;
     PORTCbits.RC1 = 0;
 }
+void UART_Report_Status(float voltage_mv)
+{
+    printf("\r\nVoltage: %.2f mV\r\n", voltage_mv);
+
+    printf("Switch Status:\r\n");
+    printf("  NSPED_SW: %s\r\n", (NSPED_SW ? "ON" : "OFF"));
+    printf("  EWPED_SW: %s\r\n", (EWPED_SW ? "ON" : "OFF"));
+    printf("  NSLT_SW : %s\r\n", (NSLT_SW  ? "ON" : "OFF"));
+    printf("  EWLT_SW : %s\r\n", (EWLT_SW  ? "ON" : "OFF"));
+}
+
 
 void Night_Mode()
 {
@@ -370,22 +391,29 @@ void Init_TRIS(void) {
 int main()
 {
    Init_TRIS();
-   init_UART();
+   Init_UART();
    Init_ADC();
 
    while(1)
    {
-        unsigned int adc_value = get_full_ADC();    
+       
+       // unsigned int adc_value = get_full_ADC();    
 //        float voltage_mv = adc_value * 4.8828;
-        float voltage_v = adc_value * 0.0048828;
+       // float voltage_v = adc_value * 0.0048828;
+        //UART_Report_Status(voltage_v);
 
-        if(voltage_v > 2.50){
+        //if(voltage_v < 2.50){
             
-            Day_Mode();
-        }
-        else{
-            Night_Mode();
-        }
+      //      Day_Mode();
+       // }
+        //else{
+        //    Night_Mode();
+       // }
+        putcUSART('H');
+putcUSART('i');
+putcUSART('\r');
+putcUSART('\n');    
+        Wait_One_Second();
         
    }
 

@@ -4968,13 +4968,13 @@ extern double trunc(double);
 extern double round(double);
 
 
-# 6 "lab6.c"
+# 7 "lab6.c"
 #pragma config OSC = INTIO67
 #pragma config WDT=OFF
 #pragma config LVP=OFF
 #pragma config BOREN =OFF
 
-# 17
+# 18
 void Wait_Half_Second(void);
 void Wait_One_Second(void);
 void Wait_N_Seconds(char seconds);
@@ -5028,12 +5028,21 @@ Wait_Half_Second ();
 
 
 
-void init_UART ()
+void Init_UART(void)
 {
-OpenUSART (0b01111111 & 0b10111111 &
-0b11111110 & 0b11111101 & 0b11111111 &
-0b11111111, 25);
 OSCCON = 0x70;
+TRISCbits.TRISC6 = 0;
+TRISCbits.TRISC7 = 1;
+
+OpenUSART(0b01111111 &
+0b10111111 &
+0b11111110 &
+0b11111101 &
+0b11111111 &
+0b11111111, 25);
+
+TXSTAbits.TXEN = 1;
+RCSTAbits.SPEN = 1;
 }
 
 void Wait_N_Seconds (char seconds)
@@ -5045,7 +5054,7 @@ Wait_One_Second ();
 }
 }
 
-# 111
+# 121
 void set_NS (char color)
 {
 switch (color)
@@ -5138,6 +5147,17 @@ void Deactivate_Buzzer()
 CCP2CON = 0x0;
 PORTCbits.RC1 = 0;
 }
+void UART_Report_Status(float voltage_mv)
+{
+printf("\r\nVoltage: %.2f mV\r\n", voltage_mv);
+
+printf("Switch Status:\r\n");
+printf("  NSPED_SW: %s\r\n", (PORTAbits.RA3 ? "ON" : "OFF"));
+printf("  EWPED_SW: %s\r\n", (PORTAbits.RA4 ? "ON" : "OFF"));
+printf("  NSLT_SW : %s\r\n", (PORTAbits.RA5 ? "ON" : "OFF"));
+printf("  EWLT_SW : %s\r\n", (PORTCbits.RC0 ? "ON" : "OFF"));
+}
+
 
 void Night_Mode()
 {
@@ -5308,22 +5328,18 @@ TRISE = 0x00;
 int main()
 {
 Init_TRIS();
-init_UART();
+Init_UART();
 Init_ADC();
 
 while(1)
 {
-unsigned int adc_value = get_full_ADC();
 
-float voltage_v = adc_value * 0.0048828;
-
-if(voltage_v > 2.50){
-
-Day_Mode();
-}
-else{
-Night_Mode();
-}
+# 412
+WriteUSART('H');
+WriteUSART('i');
+WriteUSART('\r');
+WriteUSART('\n');
+Wait_One_Second();
 
 }
 
