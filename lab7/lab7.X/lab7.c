@@ -3,6 +3,7 @@
 #include <math.h>
 #include <usart.h>
 
+
 #pragma config OSC = INTIO67      // Internal oscillator
 #pragma config WDT=OFF            // Watchdog Timer disabled
 #pragma config LVP=OFF            // Low-Voltage Programming disabled
@@ -12,7 +13,7 @@
 
 
 // 7-segment display decimal point
-#define SEC_LED PORTEbits.RE2
+#define SEC_LED PORTDbits.RD7
 // === Function prototypes ===
 void Wait_Half_Second(void);
 void Wait_One_Second(void);
@@ -32,7 +33,7 @@ void Display_Upper(char num)
 
 void Display_Lower(char num)
 {
-    PORTB = seven_seg_table[num];   // display number on lower 7-segment
+    PORTC = seven_seg_table[num];   // display number on lower 7-segment
 }
 
 void Clear_Upper_Display(void)
@@ -42,7 +43,7 @@ void Clear_Upper_Display(void)
 
 void Clear_Lower_Display(void)
 {
-    PORTB = 0xFF;
+    PORTC = 0xFF;
 }
 
 void Wait_Half_Second ()
@@ -114,7 +115,7 @@ char I;
 #define YELLOW 3
 #define UPPER_7SEG PORTB
 #define LOWER_7SEG PORTD
-#define MODE_LED PORTEbits.RE1
+#define MODE_LED PORTEbits.RE2
 //#define BUZZER PORTDbits.RD1
 
 void set_NS (char color)
@@ -163,65 +164,28 @@ void set_EWLT(char color)
 
 
 
-//void PED_Control (char Direction, char Num_Sec) 
-//{
-//   if(Direction == 0)
-//   {
-//       Clear_Lower_Display();
-//        while(Num_Sec > 0)
-//        {
-//            Display_Upper(Num_Sec - 1);
-//            Wait_One_Second_With_Beep();
-//            Num_Sec -= 1;
-//        }
-//        Clear_Upper_Display();    
-//   }
-//   else if(Direction == 1)
-//   {
-//       Clear_Upper_Display();
-//       
-//        while(Num_Sec > 0)
-//        {
-//            Display_Lower(Num_Sec - 1);
-//            Wait_One_Second_With_Beep();
-//            Num_Sec-=1;
-//        }
-//        Clear_Lower_Display();
-//   }
-//}
-void PED_Control(char direction, char num_sec)
+void PED_Control (char Direction, char Num_Sec) 
 {
-//    for(int i=0; i<num_sec-1; i++)
-//    {
-        if (direction == 0)
+   if(Direction == 0)
+   {
+        while(Num_Sec > 0)
         {
-            //north-south direction
-            //7seg lower digit off
-            PORTB = 0xFF;
-            for (int i=num_sec-1; i>0; i--)
-            {
-                //7seg upper digit start with num_sec-1
-                PORTD = seven_seg_table[i];
-                Wait_One_Second_With_Beep();
-            }
-            PORTD = 0xFF;
+            Display_Upper(Num_Sec - 1);
+            Wait_One_Second_With_Beep();
+            Num_Sec -= 1;
         }
-        
-        if (direction == 1)
+        Clear_Upper_Display();    
+   }
+   else
+   {
+        while(Num_Sec > 0)
         {
-            //north-south direction
-            //7seg lower digit off
-            PORTD = 0xFF;
-            for (int j=num_sec-1; j>0; j--)
-            {
-                //7seg upper digit start with num_sec-1
-                PORTB = (seven_seg_table[j] & 0x7F) | (PORTB & 0x80);
-                Wait_One_Second_With_Beep();
-            }
-            PORTB = 0xFF;
+            Display_Lower(Num_Sec - 1);
+            Wait_One_Second_With_Beep();
+            Num_Sec--;
         }
-//    }
-        Wait_One_Second_With_Beep();
+        Clear_Lower_Display();
+   }
 }
 
 //Buzzer implementaion
@@ -263,8 +227,6 @@ void Night_Mode()
     // Step 0: Turn off pedestrian displays and mode LED
     UPPER_7SEG = 0;
     LOWER_7SEG = 0;
-    Clear_Upper_Display();
-    Clear_Lower_Display();
     MODE_LED = 0;
 
     // === Step 1: Initial state ===
@@ -331,8 +293,6 @@ void Night_Mode()
 void Day_Mode(void)
 {
     // Step 1: Turn on MODE LED and set initial states
-    Clear_Upper_Display();
-    Clear_Lower_Display();
     MODE_LED = 1;
     set_EW(RED);
     set_EWLT(RED);
@@ -377,7 +337,6 @@ void Day_Mode(void)
     if (EWPED_SW == 1)
     {
         PED_Control(1, 8);      // 1 = EW direction pedestrian countdown
-       
     }
 
     // Step 11: EW stays green for 6 seconds
@@ -422,9 +381,9 @@ unsigned int get_full_ADC(void) {
     return (ADRESH << 8) + ADRESL;
 }
 void Init_TRIS(void) {
-    TRISA = 0xF9;   // RA0 input (ADC), RA3-5 inputs (switches), RA1-2 outputs (NS lights)
+    TRISA = 0b11100001;   // RA0 input (ADC), RA3-5 inputs (switches), RA1-2 outputs (NS lights)
     TRISB = 0x00;         // RB all outputs
-    TRISC = 0x01;         // RC all outputs
+    TRISC = 0x00;         // RC all outputs
     TRISD = 0x00;         // RD all outputs
     TRISE = 0x00;         // RE all outputs
 }
@@ -437,19 +396,24 @@ int main()
 
    while(1)
    {
-      
-        unsigned int adc_value = get_full_ADC();    
+       
+       // unsigned int adc_value = get_full_ADC();    
 //        float voltage_mv = adc_value * 4.8828;
-        float voltage_v = adc_value * 0.0048828;
-        UART_Report_Status(voltage_v);
+       // float voltage_v = adc_value * 0.0048828;
+        //UART_Report_Status(voltage_v);
 
-        if(voltage_v < 2.50){
+        //if(voltage_v < 2.50){
             
-            Day_Mode();
-        }
-        else{
-            Night_Mode();
-        }
+      //      Day_Mode();
+       // }
+        //else{
+        //    Night_Mode();
+       // }
+        putcUSART('H');
+putcUSART('i');
+putcUSART('\r');
+putcUSART('\n');    
+        Wait_One_Second();
         
    }
 

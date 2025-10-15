@@ -4968,13 +4968,13 @@ extern double trunc(double);
 extern double round(double);
 
 
-# 6 "lab6.c"
+# 7 "lab6.c"
 #pragma config OSC = INTIO67
 #pragma config WDT=OFF
 #pragma config LVP=OFF
 #pragma config BOREN =OFF
 
-# 17
+# 18
 void Wait_Half_Second(void);
 void Wait_One_Second(void);
 void Wait_N_Seconds(char seconds);
@@ -4993,7 +4993,7 @@ PORTD = seven_seg_table[num];
 
 void Display_Lower(char num)
 {
-PORTB = seven_seg_table[num];
+PORTC = seven_seg_table[num];
 }
 
 void Clear_Upper_Display(void)
@@ -5003,7 +5003,7 @@ PORTD = 0xFF;
 
 void Clear_Lower_Display(void)
 {
-PORTB = 0xFF;
+PORTC = 0xFF;
 }
 
 void Wait_Half_Second ()
@@ -5020,9 +5020,9 @@ T0CONbits.TMR0ON = 0;
 
 void Wait_One_Second ()
 {
-PORTEbits.RE2 = 1;
+PORTDbits.RD7 = 1;
 Wait_Half_Second ();
-PORTEbits.RE2 = 0;
+PORTDbits.RD7 = 0;
 Wait_Half_Second ();
 }
 
@@ -5054,7 +5054,7 @@ Wait_One_Second ();
 }
 }
 
-# 120
+# 121
 void set_NS (char color)
 {
 switch (color)
@@ -5099,49 +5099,39 @@ case 3: PORTBbits.RB7 =1;PORTEbits.RE0=1;break;
 }
 }
 
-# 192
-void PED_Control(char direction, char num_sec)
+
+
+void PED_Control (char Direction, char Num_Sec)
 {
-
-
-if (direction == 0)
+if(Direction == 0)
 {
-
-
-PORTB = 0xFF;
-for (int i=num_sec-1; i>0; i--)
+while(Num_Sec > 0)
 {
-
-PORTD = seven_seg_table[i];
+Display_Upper(Num_Sec - 1);
 Wait_One_Second_With_Beep();
+Num_Sec -= 1;
 }
-PORTD = 0xFF;
+Clear_Upper_Display();
 }
-
-if (direction == 1)
+else
 {
-
-
-PORTD = 0xFF;
-for (int j=num_sec-1; j>0; j--)
+while(Num_Sec > 0)
 {
-
-PORTB = (seven_seg_table[j] & 0x7F) | (PORTB & 0x80);
+Display_Lower(Num_Sec - 1);
 Wait_One_Second_With_Beep();
+Num_Sec--;
 }
-PORTB = 0xFF;
+Clear_Lower_Display();
 }
-
-Wait_One_Second_With_Beep();
 }
 
 
 void Wait_One_Second_With_Beep ()
 {
-PORTEbits.RE2 = 1;
+PORTDbits.RD7 = 1;
 Activate_Buzzer ();
 Wait_Half_Second ();
-PORTEbits.RE2 = 0;
+PORTDbits.RD7 = 0;
 Deactivate_Buzzer ();
 Wait_Half_Second ();
 }
@@ -5174,9 +5164,7 @@ void Night_Mode()
 
 PORTB = 0;
 PORTD = 0;
-Clear_Upper_Display();
-Clear_Lower_Display();
-PORTEbits.RE1 = 0;
+PORTEbits.RE2 = 0;
 
 
 set_EW(1);
@@ -5242,9 +5230,7 @@ set_NSLT(1);
 void Day_Mode(void)
 {
 
-Clear_Upper_Display();
-Clear_Lower_Display();
-PORTEbits.RE1 = 1;
+PORTEbits.RE2 = 1;
 set_EW(1);
 set_EWLT(1);
 set_NSLT(1);
@@ -5288,7 +5274,6 @@ set_EW(2);
 if (PORTAbits.RA4 == 1)
 {
 PED_Control(1, 8);
-
 }
 
 
@@ -5333,9 +5318,9 @@ while (ADCON0bits.DONE == 1);
 return (ADRESH << 8) + ADRESL;
 }
 void Init_TRIS(void) {
-TRISA = 0xF9;
+TRISA = 0b11100001;
 TRISB = 0x00;
-TRISC = 0x01;
+TRISC = 0x00;
 TRISD = 0x00;
 TRISE = 0x00;
 }
@@ -5349,18 +5334,12 @@ Init_ADC();
 while(1)
 {
 
-unsigned int adc_value = get_full_ADC();
-
-float voltage_v = adc_value * 0.0048828;
-UART_Report_Status(voltage_v);
-
-if(voltage_v < 2.50){
-
-Day_Mode();
-}
-else{
-Night_Mode();
-}
+# 412
+WriteUSART('H');
+WriteUSART('i');
+WriteUSART('\r');
+WriteUSART('\n');
+Wait_One_Second();
 
 }
 
