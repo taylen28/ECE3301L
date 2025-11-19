@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <xc.h>
@@ -12,10 +13,11 @@
 #include "ST7735_TFT.h"
 
 
+
 char buffer[31];                        // general buffer for display purpose
 char *nbr;                              // general pointer used for buffer
 char *txt;
-char Timing_Txt[] = "SP24/1/01";
+char Timing_Txt[] = "F25/10/28";
 
 
 
@@ -48,5 +50,3 @@ void Initialize_LCD_Screen(void)
      Timing_Txt[8] = Table_Number%10 + '0'; 
      drawtext(1, Flash_Y, Timing_Txt, ST7735_WHITE, ST7735_BLACK, TS_1);
 }
-
-

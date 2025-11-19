@@ -703,7 +703,7 @@ BOOL bmpDraw(char x, char y, char *bmpname){
       i = 0;
       if(fat16_read_data(buffer, bmpdata) != 0)
         return 1;
-    }
+    } 
     b = bmpdata[i++];
     g = bmpdata[i++];
     r = bmpdata[i++];

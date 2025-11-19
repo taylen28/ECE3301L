@@ -6,119 +6,152 @@
 #include <usart.h>
 #include <string.h>
 
-#pragma config OSC = INTIO67
-#pragma config WDT = OFF
-#pragma config LVP = OFF
-#pragma config BOREN = OFF
-//#pragma config CCP2MX = PORTBE
+#pragma config OSC = INTIO67   // Use internal oscillator, I/O on RA6 & RA7
+#pragma config WDT = OFF       // Disable Watchdog Timer
+#pragma config LVP = OFF       // Disable Low Voltage Programming
+#pragma config BOREN = OFF     // Disable Brown-out Reset
+//#pragma config CCP2MX = PORTBE // Optional: maps CCP2 to RE7 if needed
 
-#include "ST7735_TFT.h"
-#include "utils.h"
-#include "Main_Screen.h"
-#include "Interrupt.h"
+#include "ST7735_TFT.h"        // LCD screen control header
+#include "utils.h"             // Contains helper functions like delay, buzzer, etc.
+#include "Main_Screen.h"       // LCD display layout
+#include "Interrupt.h"         // NEC infrared interrupt setup and handlers
 
-#define _XTAL_FREQ  8000000             // Set operation for 8 Mhz
+#define _XTAL_FREQ  8000000    // Define system clock frequency as 8 MHz
 
 
-short Nec_OK = 0;
-char Nec_Button;
-extern unsigned long long Nec_code;
+// ------------------- GLOBAL VARIABLES -------------------
+short Nec_OK = 0;              // Flag that indicates an IR signal has been fully received
+char Nec_Button;               // Stores decoded button value from the IR remote
+extern unsigned long long Nec_code; // Stores the full 64-bit NEC IR code
 
-typedef enum{
+// ------------------- ENUM DEFINITIONS -------------------
+typedef enum {
     OFF, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE
-} colors;
+} colors;                      // Used for readability when referring to colors
 
-char array1[21] = {0xA2, 0x62, 0xE2, 0x22, 0x02, 0xC2, 0xE0, 0xA8, 0x90, 0x68, 0x98, 0xB0, 0x30, 0x18, 0x7A, 0x10, 0x38, 0x5A, 0x42, 0x4A, 0x52};
-char txt1[21][4] = {"CH-\0", " CH\0", "CH+\0", "PRV\0", "NXT\0", "PAU\0", "VL-\0", "VL+\0", " EQ\0", " 0 \0", "100\0", "200\0", " 1 \0", " 2 \0", " 3 \0", " 4 \0", " 5 \0", " 6 \0", " 7 \0", " 8 \0", " 9 \0"};
-int color[21] = {RD, RD, RD, CY, CY, GR, BU, BU, MA, BK, BK, BK, BK, BK, BK, BK, BK, BK, BK, BK, BK};
-int color2[21] = { RED, RED, RED, CYAN, CYAN, GREEN, BLUE, BLUE, MAGENTA, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE};
-int nums[21] = {0,0,0,0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1};
+// ------------------- REMOTE BUTTON TABLES -------------------
+char array1[21] = {
+    0xA2, 0x62, 0xE2, 0x22, 0x02, 0xC2, 0xE0, 0xA8, 0x90,
+    0x68, 0x98, 0xB0, 0x30, 0x18, 0x7A, 0x10, 0x38, 0x5A, 0x42, 0x4A, 0x52
+}; // NEC button codes
 
-extern volatile unsigned char* RGB_LED[] = {&PORTB, &PORTA, &PORTA};
+char txt1[21][4] = {
+    "CH-\0", " CH\0", "CH+\0", "PRV\0", "NXT\0", "PAU\0", "VL-\0", "VL+\0", " EQ\0",
+    " 0 \0", "100\0", "200\0", " 1 \0", " 2 \0", " 3 \0", " 4 \0", " 5 \0", " 6 \0", " 7 \0", " 8 \0", " 9 \0"
+}; // Labels for displaying on LCD screen
 
+// Colors for drawing on LCD screen
+int color[21] = {
+    RD, RD, RD, CY, CY, GR, BU, BU, MA,
+    BK, BK, BK, BK, BK, BK, BK, BK, BK, BK, BK, BK
+};
+
+// RGB LED color mapping (each corresponds to the button pressed)
+int color2[21] = {
+    RED, RED, RED, CYAN, CYAN, GREEN, BLUE, BLUE, MAGENTA,
+    WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE
+};
+
+// Determines which LED indicator (D1/D2/D3) activates for each button
+int nums[21] = {
+    0,0,0,0,0,0,0,0,0,1,0,0,1,1,1,1,1,1,1,1,1
+};
+
+// ------------------- RGB LED PORT POINTERS -------------------
+extern volatile unsigned char* RGB_LED[] = { &PORTB, &PORTA, &PORTA };
+// These point to the PORT registers for each LED group (D1 → PORTB, D2/D3 → PORTA)
+
+// Bit position offsets for each LED group
 char off[] = {3, 0, 3};
 
+
+// ============================================================
+//                       MAIN FUNCTION
+// ============================================================
 void main() {
-    Init_UART();
-    OSCCON = 0x70; // 8 Mhz
-    nRBPU = 0; // Enable PORTB internal pull up resistor
-    TRISB = 0x01;
-    TRISC = 0x00; // PORTC as output
-    TRISD = 0x00;
-    ADCON1 = 0x0F; //
-    TRISA = 0x00;
-    TRISE = 0x00;
-    
-    
+    // ---------- INITIALIZATION ----------
+    Init_UART();               // Setup UART for serial debugging (printf output)
+    OSCCON = 0x70;             // Set internal oscillator to 8 MHz
+    nRBPU = 0;                 // Enable PORTB internal pull-up resistors
+
+    // Set up data directions for I/O ports
+    TRISB = 0x01;              // RB0 as input (for IR receiver), rest outputs
+    TRISC = 0x00;              // PORTC all outputs
+    TRISD = 0x00;              // PORTD all outputs (LEDs, buzzer)
+    TRISA = 0x00;              // PORTA all outputs (RGB LEDs)
+    TRISE = 0x00;              // PORTE all outputs
+
+    ADCON1 = 0x0F;             // Configure all analog pins as digital I/O
+
+    // Clear all port output values initially
     PORTA = 0x00;
     PORTB = 0x00;
     PORTC = 0x00;
- 
 
+    // Initialize LCD display and IR interrupt system
     Initialize_LCD_Screen();
     Init_Interrupt();
 
-    // Clear code
+    Nec_code = 0x0;            // Clear any previous NEC data
 
-    Nec_code = 0x0;
-
+    // ---------- MAIN LOOP ----------
     while (1) {
+        // Check if a full NEC IR code has been received
         if (Nec_OK == 1) {
-            Nec_OK = 0;
-            Enable_INT_Interrupt();
-            printf("NEC_Button = %x \r\n", Nec_Button);
+            Nec_OK = 0;                    // Reset flag
+            Enable_INT_Interrupt();        // Re-enable IR interrupt for next signal
+            printf("NEC_Button = %x \r\n", Nec_Button); // Print received code
 
-            char found = 0xff;
+            char found = 0xff;             // Initialize "not found" flag
 
+            // Loop through array to find which button was pressed
             for (int i = 0; i < 21; i++) {
                 if (array1[i] == Nec_Button) {
                     found = i;
                 }
             }
 
+            // If valid button found
             if (found != 0xff) {
                 printf("Key Location = %d \r\n\n", found);
+
+                // ---------- LCD DISPLAY UPDATE ----------
+                // Draw a filled colored circle and display the button label
                 fillCircle(Circle_X, Circle_Y, Circle_Size, color[found]);
                 drawCircle(Circle_X, Circle_Y, Circle_Size, ST7735_WHITE);
                 drawtext(Text_X, Text_Y, txt1[found], ST7735_WHITE, ST7735_BLACK, TS_1);
 
-                // add code to output color for the RGB LEDS
-                
-               // clear all LEDs first
-// clear all LEDs first
-PORTA = 0;
-PORTB = 0;
-PORTCbits.RC0 = nums[found];
+                // ---------- RGB LED OUTPUT ----------
+                // Turn off all LEDs first
+                PORTA = 0;
+                PORTB = 0;
+                PORTCbits.RC0 = nums[found];  // Set indicator bit on PORTC (D1/D2/D3)
 
-// determine which LED group (D1 / D2 / D3) to light up
-char LED_Sel;
+                // Determine which RGB LED group to light up
+                char LED_Sel;
+                if (found >= 0 && found <= 2) {
+                    LED_Sel = 0;  // D1 group
+                }
+                else if (found >= 3 && found <= 8) {
+                    LED_Sel = 1;  // D2 group
+                }
+                else {
+                    LED_Sel = 2;  // D3 group
+                }
 
-// CH-, CH, CH+
-if (found >= 0 && found <= 2) {
-    LED_Sel = 0;   // D1
-}
-// PRV?EQ
-else if (found >= 3 && found <= 8) {
-    LED_Sel = 1;   // D2
-}
-// 0, 100, 200, 1?9
-else {
-    LED_Sel = 2;   // D3
-}
+                // Apply color value to selected RGB LED group using bit masking
+                *RGB_LED[LED_Sel] =
+                    (*RGB_LED[LED_Sel] & (~(0b00000111 << off[LED_Sel]))) |
+                    ((color2[found] & 0b00000111) << off[LED_Sel]);
 
-// light up the correct diode
-*RGB_LED[LED_Sel] =
-    (*RGB_LED[LED_Sel] & (~(0b00000111 << off[LED_Sel]))) |
-    ((color2[found] & 0b00000111) << off[LED_Sel]);
-
-			
-                // add code to handle the KEY_PRESSED LED and do the buzzer sound
-                PORTDbits.RD7 = 1;  
-                Activate_Buzzer();
-                Wait_One_Sec();
-                Deactivate_Buzzer();
-                PORTDbits.RD7 = 0;
-
+                // ---------- BUZZER & KEY PRESSED INDICATOR ----------
+                // Turn on LED and buzzer to confirm a button press
+                PORTDbits.RD7 = 1;      // Turn on KEY_PRESSED LED
+                Activate_Buzzer();      // Play buzzer sound
+                Wait_One_Sec();         // Keep it active for 1 second
+                Deactivate_Buzzer();    // Stop buzzer
+                PORTDbits.RD7 = 0;      // Turn off KEY_PRESSED LED
             }
         }
     }

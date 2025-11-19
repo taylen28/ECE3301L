@@ -1,7 +1,14 @@
-#pragma config OSC = INTIO67
-#pragma config WDT = OFF
-#pragma config LVP = OFF
-#pragma config BOREN = OFF
+
+
+
+
+
+
+
+#pragma config OSC = INTIO67     // Internal oscillator, I/O on RA6 & RA7
+#pragma config WDT = OFF         // Disable Watchdog Timer
+#pragma config LVP = OFF         // Disable Low Voltage Programming
+#pragma config BOREN = OFF       // Disable Brown-out Reset
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,325 +22,345 @@
 #include "Main_Screen.h"
 #include "ST7735_TFT.h"
 
+// === Function Prototypes ===
 void Set_NS(char color);
 void Set_NSLT(char color);
 void Set_EW(char color);
 void Set_EWLT(char color);
-void PED_Control( char Direction, char Num_Sec);
+void PED_Control(char direction, char Num_Sec);
 void Day_Mode();
 void Night_Mode();
-void Wait_N_Seconds (char);
+void Wait_N_Seconds(char);
 void Wait_One_Second_With_Beep();
 void Wait_One_Second();
 void Do_Flashing();
 
+// === Global Variables ===
 char INT0_Flag;
 char INT1_Flag;
-char INT2_Flag; 
+char INT2_Flag;
 
-
-#define _XTAL_FREQ  8000000             // Set operation for 8 Mhz
-#define TMR_CLOCK   _XTAL_FREQ/4        // Timer Clock 2 Mhz
+#define _XTAL_FREQ  8000000             // Set system clock to 8 MHz
+#define TMR_CLOCK   _XTAL_FREQ/4        // Timer runs at 2 MHz (Fosc/4)
 
 char dir;
-char Count;                             // RAM variable for Second Count
-char PED_Count;                         // RAM variable for Second Pedestrian Count
+char Count;                             // General counter variable
+char PED_Count;                         // Pedestrian countdown variable
 
-char  MODE;
-char direction;
-float volt;
+char MODE;                              // 1 = Day Mode, 0 = Night Mode
+char direction;                         // Tracks which direction (NS, EW, etc.)
+float volt;                             // Voltage reading from light sensor
 
-extern char Light_Sensor;
+extern char Light_Sensor;               // Declared in another file
 
+// Interrupt-related flags (set by ISR routines)
 char NS_PED_SW = 0;
-char EW_PED_SW = 0; 
+char EW_PED_SW = 0;
 
 char Flashing_Request = 0;
-char Flashing_Status = 0; 
+char Flashing_Status = 0;
 
+// =====================================================
+//                  MAIN FUNCTION
+// =====================================================
 void main(void)
 {
-    OSCCON = 0x70;                      // set the system clock to be 1MHz 1/4 of the 4MHz
-    TRISA = 0x1F;                       //inputs RA0/AN0-RA4 inputs,RA5 output
-    TRISB = 0x07;                       // outputs
-    TRISC = 0x00;                       // set PORTC as outputs
-    TRISD = 0x00;                       // set PORTD as outputs
-    TRISE = 0x00;                       // set PORTE as outputs
-    Init_ADC();
-    Init_UART();
+    OSCCON = 0x70;                      // Set internal oscillator to 8 MHz
+    TRISA = 0x1F;                       // RA0–RA4 inputs (for sensors), RA5 output
+    TRISB = 0x07;                       // RB0–RB2 inputs for external interrupts
+    TRISC = 0x00;                       // PORTC as output (LEDs or control signals)
+    TRISD = 0x00;                       // PORTD as output
+    TRISE = 0x00;                       // PORTE as output
 
-    Initialize_LCD_Screen();                        // Initialize the TFT screen
-    RBPU = 0;
-    init_INTERRUPT();
-    
-    /* For Testing 
-     while (1)
-    { // Do nothing,
-     if (INT0_Flag == 1)
+    Init_ADC();                         // Initialize analog-to-digital converter
+    Init_UART();                        // Initialize serial UART for debug messages
+
+    Initialize_LCD_Screen();            // Initialize TFT screen for display
+    RBPU = 0;                           // Enable PORTB pull-ups (for switches)
+    init_INTERRUPT();                   // Enable external interrupts INT0–INT2
+
+    // === LIGHT SENSOR READING ===
+    volt = Read_Volt(0);                // Read analog voltage from LDR (RA0)
+    Light_Sensor = (volt < 2.5) ? 1 : 0; // Day mode if bright (voltage < 2.5V)
+
+    // === MAIN LOOP ===
+    while(1)
     {
-     INT0_Flag = 0; // clear the flag
-     printf("INT0 interrupt pin detected \r\n");
-    // print a message that INT0 has
-    // occurred
-     }
-     if (INT1_Flag == 1)
-    {
-     INT1_Flag = 0; // clear the flag
-     printf("INT1 interrupt pin detected \r\n");
-    // print a message that INT1 has
-    // occurred
-     }
-     if (INT2_Flag == 1)
-    {
-     INT2_Flag = 0; // clear the flag
-     printf("INT2 interrupt pin detected \r\n");
-    // print a message that INT2 has
-    // occurred
-     }
-    } 
-   */
-
-    volt = Read_Volt(0);                        // 
-
-    Light_Sensor = volt < 2.5 ? 1:0;                 // Mode = 1, Day_mode, Mode = 0 Night_mode
-
-    while(1)                                    // forever loop
-    {
-
-        if (Light_Sensor == 1)    
+        // Select operating mode based on light sensor reading
+        if (Light_Sensor == 1)
         {
-            Day_Mode();                         // calls Day_Mode() function
+            Day_Mode();                 // Run traffic cycle for daytime
         }
         else
         {
-            Night_Mode();                       // calls Night_Mode() function
+            Night_Mode();               // Run traffic cycle for nighttime
         }
-        if (Flashing_Request == 1) {
+
+        // If flashing mode is requested via INT2 interrupt
+        if (Flashing_Request == 1)
+        {
             Flashing_Request = 0;
             Flashing_Status = 1;
-            Do_Flashing();
-        } 
-     
-    } 
+            Do_Flashing();              // Enter flashing mode
+        }
+    }
 }
-void Do_Flashing(){
-    while(Flashing_Status == 1){
-        if(Flashing_Request == 0){
-            
+
+// =====================================================
+//                  FLASHING MODE FUNCTION
+// =====================================================
+// Flashes all red lights ON and OFF until the user exits flashing mode
+void Do_Flashing()
+{
+    while (Flashing_Status == 1)
+    {
+        if (Flashing_Request == 0)
+        {
+            // Turn all lights ON (red)
             Set_NS(RED);
             Set_NSLT(RED);
             Set_EW(RED);
             Set_EWLT(RED);
-            
             Wait_One_Second();
-            
+
+            // Turn all lights OFF
             Set_NS(OFF);
             Set_NSLT(OFF);
             Set_EW(OFF);
             Set_EWLT(OFF);
-            
             Wait_One_Second();
-        } else if(Flashing_Request == 1){
+        }
+        else if (Flashing_Request == 1)
+        {
+            // Exit flashing mode when button pressed again
             Flashing_Request = 0;
             Flashing_Status  = 0;
         }
     }
 }
 
+// =====================================================
+//                TRAFFIC LIGHT CONTROL FUNCTIONS
+// =====================================================
+
+// Controls North-South light
 void Set_NS(char color)
 {
-    // add code here
-    direction = NS; 
-    update_LCD_color (direction, color); 
+    direction = NS;
+    update_LCD_color(direction, color);  // Update LCD indicator
+
     switch (color)
     {
-    case OFF: NS_RED =0;NS_GREEN=0;break; // Turns off the NS LED
-    case RED: NS_RED =1;NS_GREEN=0;break; // Sets NS LED RED
-    case GREEN: NS_RED =0;NS_GREEN=1;break; // sets NS LED GREEN
-    case YELLOW: NS_RED =1;NS_GREEN=1;break; // sets NS LED YELLOW
+        case OFF:    NS_RED=0; NS_GREEN=0; break;
+        case RED:    NS_RED=1; NS_GREEN=0; break;
+        case GREEN:  NS_RED=0; NS_GREEN=1; break;
+        case YELLOW: NS_RED=1; NS_GREEN=1; break;
     }
 }
 
+// Controls North-South Left Turn light
 void Set_NSLT(char color)
 {
-    // add code here
-    direction = NSLT; 
-    update_LCD_color (direction, color); 
+    direction = NSLT;
+    update_LCD_color(direction, color);
+
     switch (color)
     {
-    case OFF: NSLT_RED =0;NSLT_GREEN=0;break; // Turns off the NS LED
-    case RED: NSLT_RED =1;NSLT_GREEN=0;break; // Sets NS LED RED
-    case GREEN: NSLT_RED =0;NSLT_GREEN=1;break; // sets NS LED GREEN
-    case YELLOW: NSLT_RED =1;NSLT_GREEN=1;break; // sets NS LED YELLOW
+        case OFF:    NSLT_RED=0; NSLT_GREEN=0; break;
+        case RED:    NSLT_RED=1; NSLT_GREEN=0; break;
+        case GREEN:  NSLT_RED=0; NSLT_GREEN=1; break;
+        case YELLOW: NSLT_RED=1; NSLT_GREEN=1; break;
     }
 }
 
+// Controls East-West light
 void Set_EW(char color)
 {
-    // add code here
-    direction = EW; 
-    update_LCD_color (direction, color);
+    direction = EW;
+    update_LCD_color(direction, color);
+
     switch (color)
     {
-    case OFF: EW_RED =0;EW_GREEN=0;break; // Turns off the NS LED
-    case RED: EW_RED =1;EW_GREEN=0;break; // Sets NS LED RED
-    case GREEN: EW_RED =0;EW_GREEN=1;break; // sets NS LED GREEN
-    case YELLOW: EW_RED =1;EW_GREEN=1;break; // sets NS LED YELLOW
+        case OFF:    EW_RED=0; EW_GREEN=0; break;
+        case RED:    EW_RED=1; EW_GREEN=0; break;
+        case GREEN:  EW_RED=0; EW_GREEN=1; break;
+        case YELLOW: EW_RED=1; EW_GREEN=1; break;
     }
 }
 
+// Controls East-West Left Turn light
 void Set_EWLT(char color)
 {
-    // add code here
-    direction = EWLT; 
-    update_LCD_color (direction, color);
+    direction = EWLT;
+    update_LCD_color(direction, color);
+
     switch (color)
     {
-    case OFF: EWLT_RED =0;EWLT_GREEN=0;break; // Turns off the NS LED
-    case RED: EWLT_RED =1;EWLT_GREEN=0;break; // Sets NS LED RED
-    case GREEN: EWLT_RED =0;EWLT_GREEN=1;break; // sets NS LED GREEN
-    case YELLOW: EWLT_RED =1;EWLT_GREEN=1;break; // sets NS LED YELLOW
+        case OFF:    EWLT_RED=0; EWLT_GREEN=0; break;
+        case RED:    EWLT_RED=1; EWLT_GREEN=0; break;
+        case GREEN:  EWLT_RED=0; EWLT_GREEN=1; break;
+        case YELLOW: EWLT_RED=1; EWLT_GREEN=1; break;
     }
 }
 
-void PED_Control( char direction, char Num_Sec)
-{ 
-    // add code here
-  for(int i=Num_Sec;i>0;i--)
-  {
-      update_LCD_PED_Count(direction, i-1); // Display Num_Sec-1 on LED2
-      Wait_One_Second_With_Beep();
-  }
-  if(direction){
-      EW_PED_SW = 0;
-  } else{
-      NS_PED_SW = 0;
-  }
- 
+// =====================================================
+//           PEDESTRIAN CONTROL FUNCTION
+// =====================================================
+// Handles pedestrian countdown for each direction
+void PED_Control(char direction, char Num_Sec)
+{
+    for (int i = Num_Sec; i > 0; i--)
+    {
+        update_LCD_PED_Count(direction, i - 1);  // Show countdown on LCD
+        Wait_One_Second_With_Beep();             // Wait 1 sec with buzzer
+    }
+
+    // Reset pedestrian switch flag after countdown completes
+    if (direction)
+        EW_PED_SW = 0;
+    else
+        NS_PED_SW = 0;
 }
 
+// =====================================================
+//                  DAY MODE FUNCTION
+// =====================================================
+// Full traffic sequence with pedestrian and left-turn logic
 void Day_Mode()
 {
-    // add code here
-    MODE     = 1;           // Day
-    MODE_LED = 1;           // Signify Day Mode
+    MODE     = 1;          // Day mode ON
+    MODE_LED = 1;          // Turn on mode LED
+
+    // Initial light state
     Set_EW(RED);
     Set_EWLT(RED);
     Set_NSLT(RED);
-    Set_NS(GREEN);          // NS Green
-    if(NS_PED_SW){          // Checks for pedestrians
-        PED_Control(NS,PEDESTRIAN_NS_WAIT);
-    }
+    Set_NS(GREEN);
+
+    // NS Pedestrian phase
+    if (NS_PED_SW)
+        PED_Control(NS, PEDESTRIAN_NS_WAIT);
+
     Wait_N_Seconds(NS_WAIT);
     Set_NS(YELLOW);
     Wait_N_Seconds(3);
-    Set_NS(RED);            // End of NS Phase
-    if(EW_LT_SW){           // Checks for EW Left Turn
+    Set_NS(RED);
+
+    // EW Left Turn phase
+    if (EW_LT_SW)
+    {
         Set_EWLT(GREEN);
         Wait_N_Seconds(EW_LT_WAIT);
         Set_EWLT(YELLOW);
         Wait_N_Seconds(3);
         Set_EWLT(RED);
     }
-    Set_EW(GREEN);          // Start of EW
-    if(EW_PED_SW){          // Checks for pedestrians
-        PED_Control(EW,PEDESTRIAN_EW_WAIT);
-    }
+
+    // EW Straight phase
+    Set_EW(GREEN);
+    if (EW_PED_SW)
+        PED_Control(EW, PEDESTRIAN_EW_WAIT);
+
     Wait_N_Seconds(EW_WAIT);
     Set_EW(YELLOW);
     Wait_N_Seconds(3);
     Set_EW(RED);
-    if(NS_LT_SW){            // Checks for NS Left Turn
+
+    // NS Left Turn phase
+    if (NS_LT_SW)
+    {
         Set_NSLT(GREEN);
         Wait_N_Seconds(NS_LT_WAIT);
         Set_NSLT(YELLOW);
         Wait_N_Seconds(3);
         Set_NSLT(RED);
-    }                       // End of Day Mode
+    }
 }
 
+// =====================================================
+//                  NIGHT MODE FUNCTION
+// =====================================================
+// Simplified cycle with no pedestrian crossings
 void Night_Mode()
-{ 
-    // add code here
-    MODE      = 0;           // Night
-    MODE_LED  = 0;           // Signify Night Mode
+{
+    MODE      = 0;         // Night mode
+    MODE_LED  = 0;         // Mode LED OFF
     EW_PED_SW = 0;
     NS_PED_SW = 0;
-    
+
     Set_EW(RED);
     Set_EWLT(RED);
     Set_NSLT(RED);
-    Set_NS(GREEN);          // Start of NS Phase
+    Set_NS(GREEN);
+
     Wait_N_Seconds(NIGHT_NS_WAIT);
     Set_NS(YELLOW);
     Wait_N_Seconds(3);
-    Set_NS(RED);            // End of NS
-    if(EW_LT_SW){            // Checks for EW Left Turn
+    Set_NS(RED);
+
+    if (EW_LT_SW)
+    {
         Set_EWLT(GREEN);
         Wait_N_Seconds(NIGHT_EW_LT_WAIT);
         Set_EWLT(YELLOW);
         Wait_N_Seconds(3);
         Set_EWLT(RED);
     }
-    Set_EW(GREEN);          // Start of EW Phase
+
+    Set_EW(GREEN);
     Wait_N_Seconds(NIGHT_EW_WAIT);
     Set_EW(YELLOW);
     Wait_N_Seconds(3);
-    Set_EW(RED);            // End of EW
-    if(NS_LT_SW){            // Checks for NS Left Turn
+    Set_EW(RED);
+
+    if (NS_LT_SW)
+    {
         Set_NSLT(GREEN);
         Wait_N_Seconds(NIGHT_NS_LT_WAIT);
         Set_NSLT(YELLOW);
         Wait_N_Seconds(3);
         Set_NSLT(RED);
     }
-    // Finish Night Mode
 }
 
-void Wait_One_Second()							//creates one second delay and blinking asterisk
+// =====================================================
+//              DELAY AND TIMER FUNCTIONS
+// =====================================================
+
+// Blinks status LED and updates LCD every second
+void Wait_One_Second()
 {
     SEC_LED = 1;
-    Draw_Star();
-    Wait_Half_Second();                         // Wait for half second (or 500 msec)
+    Draw_Star();               // Blink '*' on LCD
+    Wait_Half_Second();
     SEC_LED = 0;
     Erase_Star();
-    Wait_Half_Second();                         // Wait for half second (or 500 msec)
-    update_LCD_misc();
+    Wait_Half_Second();
+    update_LCD_misc();         // Refresh time display
 }
 
-void Wait_One_Second_With_Beep()				//creates one second delay as well as sound buzzer
+// Waits one second and beeps the buzzer (for pedestrians)
+void Wait_One_Second_With_Beep()
 {
     SEC_LED = 1;
     Draw_Star();
     Activate_Buzzer();
-    Wait_Half_Second();                         // Wait for half second (or 500 msec)
+    Wait_Half_Second();
 
     SEC_LED = 0;
     Erase_Star();
     Deactivate_Buzzer();
-    Wait_Half_Second();                         // Wait for half second (or 500 msec)
+    Wait_Half_Second();
     update_LCD_misc();
 }
- 
 
-void Wait_N_Seconds (char seconds)
+// Waits a specified number of seconds and displays countdown
+void Wait_N_Seconds(char seconds)
 {
-    char I;
-    for (I = seconds; I> 0; I--)
+    for (char i = seconds; i > 0; i--)
     {
-		// add code here;
-        update_LCD_count(direction, I);
-        Wait_One_Second();          			// calls Wait_One_Second for x number of times
-        
+        update_LCD_count(direction, i);
+        Wait_One_Second();
     }
-	// add code here;
     update_LCD_count(direction, 0);
 }
-  
-// }
-
-
-
-
-
-

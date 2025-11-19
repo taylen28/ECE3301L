@@ -1,7 +1,7 @@
 
 
 Microchip Technology PIC18 LITE Macro Assembler V1.34 build -361300703 
-                                                                                               Tue Oct 28 18:12:14 2025
+                                                                                               Tue Nov 04 16:17:19 2025
 
 Microchip Technology Omniscient Code Generator (Lite mode) build 201502162209
      1                           	processor	18F4620
@@ -1903,9 +1903,9 @@ Microchip Technology Omniscient Code Generator (Lite mode) build 201502162209
   1892                           
   1893                           ; BSR set to: 0
   1894                           ;F25_Lab10_S1_sample.c: 107: }
-  1895                           ;F25_Lab10_S1_sample.c: 110: *RGB_LED[LED_Sel] =
-  1896                           ;F25_Lab10_S1_sample.c: 111: (*RGB_LED[LED_Sel] & (~(0b00000111 << off[LED_Sel]))) |
-  1897                           ;F25_Lab10_S1_sample.c: 112: ((color2[found] & 0b00000111) << off[LED_Sel]);
+  1895                           ;F25_Lab10_S1_sample.c: 109: *RGB_LED[LED_Sel] =
+  1896                           ;F25_Lab10_S1_sample.c: 110: (*RGB_LED[LED_Sel] & (~(0b00000111 << off[LED_Sel]))) |
+  1897                           ;F25_Lab10_S1_sample.c: 111: ((color2[found] & 0b00000111) << off[LED_Sel]);
   1898  0001AE  5045               	movf	main@LED_Sel,w,c
   1899  0001B0  0D02               	mullw	2
   1900  0001B2  0E47               	movlw	low _RGB_LED
@@ -2004,20 +2004,20 @@ Microchip Technology Omniscient Code Generator (Lite mode) build 201502162209
   1993  000274  6EDF               	movwf	indf2,c
   1994                           
   1995                           ; BSR set to: 0
-  1996                           ;F25_Lab10_S1_sample.c: 116: PORTDbits.RD7 = 1;
+  1996                           ;F25_Lab10_S1_sample.c: 115: PORTDbits.RD7 = 1;
   1997  000276  8E83               	bsf	3971,7,c	;volatile
   1998                           
   1999                           ; BSR set to: 0
-  2000                           ;F25_Lab10_S1_sample.c: 117: Activate_Buzzer();
+  2000                           ;F25_Lab10_S1_sample.c: 116: Activate_Buzzer();
   2001  000278  ECC8  F00A         	call	_Activate_Buzzer	;wreg free
   2002                           
-  2003                           ;F25_Lab10_S1_sample.c: 118: Wait_One_Sec();
+  2003                           ;F25_Lab10_S1_sample.c: 117: Wait_One_Sec();
   2004  00027C  ECEE  F00A         	call	_Wait_One_Sec	;wreg free
   2005                           
-  2006                           ;F25_Lab10_S1_sample.c: 119: Deactivate_Buzzer();
+  2006                           ;F25_Lab10_S1_sample.c: 118: Deactivate_Buzzer();
   2007  000280  ECF3  F00A         	call	_Deactivate_Buzzer	;wreg free
   2008                           
-  2009                           ;F25_Lab10_S1_sample.c: 120: PORTDbits.RD7 = 0;
+  2009                           ;F25_Lab10_S1_sample.c: 119: PORTDbits.RD7 = 0;
   2010  000284  9E83               	bcf	3971,7,c	;volatile
   2011  000286  D6EE               	goto	l4138
   2012  000288  EF0C  F000         	goto	start
@@ -8454,7 +8454,7 @@ CODE                 0      0       0       0        0.0%
 
 
 Microchip Technology PIC18 Macro Assembler V1.34 build -361300703 
-Symbol Table                                                                                   Tue Oct 28 18:12:14 2025
+Symbol Table                                                                                   Tue Nov 04 16:17:19 2025
 
                      drawCircle@f 002A                       drawCircle@r 0020  
                      drawCircle@x 002C                       drawCircle@y 002E  

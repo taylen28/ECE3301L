@@ -11,11 +11,6 @@
 # All addresses and the length are given in unqualified hexadecimal
 # in delta units.  Any other numeric values are decimal.
 %PSECTS
-$C:\Users\tayle\AppData\Local\Temp\s1k88.obj
-idloc IDLOC 0 200000 200000 8 1
-reset_vec CODE 0 0 0 4 1
-end_init CODE 0 18 18 4 1
-config CONFIG 0 300000 300000 E 1
 $dist/default/production\Lab10test.X.production.obj
 cinit CODE 0 1030 1030 82 1
 intcode_body CODE 0 10B2 10B2 7C 1
@@ -71,6 +66,11 @@ dataBANK1 BANK1 1 100 100 A8 1
 dataCOMRAM COMRAM 1 47 47 15 1
 bssCOMRAM COMRAM 1 5C 5C 12 1
 mediumconst MEDIUMCONST 0 FDCE FDCE 232 1
+$C:\Users\tayle\AppData\Local\Temp\sjgc.obj
+idloc IDLOC 0 200000 200000 8 1
+reset_vec CODE 0 0 0 4 1
+end_init CODE 0 18 18 4 1
+config CONFIG 0 300000 300000 E 1
 # %UNUSED Section
 # This section enumerates the unused ranges of each CLASS. Each entry
 # is described on a single line as follows:
@@ -171,14 +171,14 @@ E2 text0 CODE >81:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample
 1A4 text0 CODE >102:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
 1A8 text0 CODE >106:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
 1AC text0 CODE >107:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
-1AE text0 CODE >112:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
-276 text0 CODE >116:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
-278 text0 CODE >117:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
-27C text0 CODE >118:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
-280 text0 CODE >119:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
-284 text0 CODE >120:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
+1AE text0 CODE >111:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
+276 text0 CODE >115:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
+278 text0 CODE >116:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
+27C text0 CODE >117:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
+280 text0 CODE >118:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
+284 text0 CODE >119:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
 286 text0 CODE >65:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
-288 text0 CODE >125:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
+288 text0 CODE >124:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\F25_Lab10_S1_sample.c
 28C text1 CODE >464:C:\Program Files (x86)\Microchip\xc8\v1.34\sources\common\doprnt.c
 28C text1 CODE >533:C:\Program Files (x86)\Microchip\xc8\v1.34\sources\common\doprnt.c
 294 text1 CODE >536:C:\Program Files (x86)\Microchip\xc8\v1.34\sources\common\doprnt.c
@@ -480,68 +480,68 @@ FF8 text18 CODE >371:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\ST7735_TFT.c
 1024 text18 CODE >375:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\ST7735_TFT.c
 102C text18 CODE >379:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\ST7735_TFT.c
 102E text18 CODE >382:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\ST7735_TFT.c
-1030 cinit CODE >2548:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1030 cinit CODE >2550:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1030 cinit CODE >2553:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1030 cinit CODE >2667:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1034 cinit CODE >2668:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1036 cinit CODE >2669:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1036 cinit CODE >2670:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1038 cinit CODE >2671:C:\Users\tayle\AppData\Local\Temp\s1k88.
-103A cinit CODE >2672:C:\Users\tayle\AppData\Local\Temp\s1k88.
-103C cinit CODE >2675:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1040 cinit CODE >2676:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1042 cinit CODE >2677:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1042 cinit CODE >2678:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1044 cinit CODE >2679:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1046 cinit CODE >2680:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1048 cinit CODE >2685:C:\Users\tayle\AppData\Local\Temp\s1k88.
-104A cinit CODE >2686:C:\Users\tayle\AppData\Local\Temp\s1k88.
-104C cinit CODE >2687:C:\Users\tayle\AppData\Local\Temp\s1k88.
-104E cinit CODE >2688:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1050 cinit CODE >2689:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1052 cinit CODE >2690:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1054 cinit CODE >2691:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1058 cinit CODE >2692:C:\Users\tayle\AppData\Local\Temp\s1k88.
-105C cinit CODE >2693:C:\Users\tayle\AppData\Local\Temp\s1k88.
-105C cinit CODE >2694:C:\Users\tayle\AppData\Local\Temp\s1k88.
-105E cinit CODE >2695:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1062 cinit CODE >2696:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1064 cinit CODE >2697:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1066 cinit CODE >2698:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1068 cinit CODE >2702:C:\Users\tayle\AppData\Local\Temp\s1k88.
-106A cinit CODE >2703:C:\Users\tayle\AppData\Local\Temp\s1k88.
-106C cinit CODE >2704:C:\Users\tayle\AppData\Local\Temp\s1k88.
-106E cinit CODE >2705:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1070 cinit CODE >2706:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1072 cinit CODE >2707:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1074 cinit CODE >2708:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1078 cinit CODE >2709:C:\Users\tayle\AppData\Local\Temp\s1k88.
-107C cinit CODE >2710:C:\Users\tayle\AppData\Local\Temp\s1k88.
-107C cinit CODE >2711:C:\Users\tayle\AppData\Local\Temp\s1k88.
-107E cinit CODE >2712:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1082 cinit CODE >2713:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1084 cinit CODE >2714:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1086 cinit CODE >2715:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1088 cinit CODE >2719:C:\Users\tayle\AppData\Local\Temp\s1k88.
-108A cinit CODE >2720:C:\Users\tayle\AppData\Local\Temp\s1k88.
-108C cinit CODE >2721:C:\Users\tayle\AppData\Local\Temp\s1k88.
-108E cinit CODE >2722:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1090 cinit CODE >2723:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1092 cinit CODE >2724:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1094 cinit CODE >2725:C:\Users\tayle\AppData\Local\Temp\s1k88.
-1098 cinit CODE >2726:C:\Users\tayle\AppData\Local\Temp\s1k88.
-109C cinit CODE >2727:C:\Users\tayle\AppData\Local\Temp\s1k88.
-109C cinit CODE >2728:C:\Users\tayle\AppData\Local\Temp\s1k88.
-109E cinit CODE >2729:C:\Users\tayle\AppData\Local\Temp\s1k88.
-10A2 cinit CODE >2730:C:\Users\tayle\AppData\Local\Temp\s1k88.
-10A4 cinit CODE >2731:C:\Users\tayle\AppData\Local\Temp\s1k88.
-10A6 cinit CODE >2732:C:\Users\tayle\AppData\Local\Temp\s1k88.
-10A8 cinit CODE >2738:C:\Users\tayle\AppData\Local\Temp\s1k88.
-10A8 cinit CODE >2740:C:\Users\tayle\AppData\Local\Temp\s1k88.
-10AA cinit CODE >2741:C:\Users\tayle\AppData\Local\Temp\s1k88.
-10AC cinit CODE >2742:C:\Users\tayle\AppData\Local\Temp\s1k88.
-10AE cinit CODE >2743:C:\Users\tayle\AppData\Local\Temp\s1k88.
+1030 cinit CODE >2548:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1030 cinit CODE >2550:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1030 cinit CODE >2553:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1030 cinit CODE >2667:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1034 cinit CODE >2668:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1036 cinit CODE >2669:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1036 cinit CODE >2670:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1038 cinit CODE >2671:C:\Users\tayle\AppData\Local\Temp\sjgc.
+103A cinit CODE >2672:C:\Users\tayle\AppData\Local\Temp\sjgc.
+103C cinit CODE >2675:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1040 cinit CODE >2676:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1042 cinit CODE >2677:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1042 cinit CODE >2678:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1044 cinit CODE >2679:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1046 cinit CODE >2680:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1048 cinit CODE >2685:C:\Users\tayle\AppData\Local\Temp\sjgc.
+104A cinit CODE >2686:C:\Users\tayle\AppData\Local\Temp\sjgc.
+104C cinit CODE >2687:C:\Users\tayle\AppData\Local\Temp\sjgc.
+104E cinit CODE >2688:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1050 cinit CODE >2689:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1052 cinit CODE >2690:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1054 cinit CODE >2691:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1058 cinit CODE >2692:C:\Users\tayle\AppData\Local\Temp\sjgc.
+105C cinit CODE >2693:C:\Users\tayle\AppData\Local\Temp\sjgc.
+105C cinit CODE >2694:C:\Users\tayle\AppData\Local\Temp\sjgc.
+105E cinit CODE >2695:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1062 cinit CODE >2696:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1064 cinit CODE >2697:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1066 cinit CODE >2698:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1068 cinit CODE >2702:C:\Users\tayle\AppData\Local\Temp\sjgc.
+106A cinit CODE >2703:C:\Users\tayle\AppData\Local\Temp\sjgc.
+106C cinit CODE >2704:C:\Users\tayle\AppData\Local\Temp\sjgc.
+106E cinit CODE >2705:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1070 cinit CODE >2706:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1072 cinit CODE >2707:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1074 cinit CODE >2708:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1078 cinit CODE >2709:C:\Users\tayle\AppData\Local\Temp\sjgc.
+107C cinit CODE >2710:C:\Users\tayle\AppData\Local\Temp\sjgc.
+107C cinit CODE >2711:C:\Users\tayle\AppData\Local\Temp\sjgc.
+107E cinit CODE >2712:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1082 cinit CODE >2713:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1084 cinit CODE >2714:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1086 cinit CODE >2715:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1088 cinit CODE >2719:C:\Users\tayle\AppData\Local\Temp\sjgc.
+108A cinit CODE >2720:C:\Users\tayle\AppData\Local\Temp\sjgc.
+108C cinit CODE >2721:C:\Users\tayle\AppData\Local\Temp\sjgc.
+108E cinit CODE >2722:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1090 cinit CODE >2723:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1092 cinit CODE >2724:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1094 cinit CODE >2725:C:\Users\tayle\AppData\Local\Temp\sjgc.
+1098 cinit CODE >2726:C:\Users\tayle\AppData\Local\Temp\sjgc.
+109C cinit CODE >2727:C:\Users\tayle\AppData\Local\Temp\sjgc.
+109C cinit CODE >2728:C:\Users\tayle\AppData\Local\Temp\sjgc.
+109E cinit CODE >2729:C:\Users\tayle\AppData\Local\Temp\sjgc.
+10A2 cinit CODE >2730:C:\Users\tayle\AppData\Local\Temp\sjgc.
+10A4 cinit CODE >2731:C:\Users\tayle\AppData\Local\Temp\sjgc.
+10A6 cinit CODE >2732:C:\Users\tayle\AppData\Local\Temp\sjgc.
+10A8 cinit CODE >2738:C:\Users\tayle\AppData\Local\Temp\sjgc.
+10A8 cinit CODE >2740:C:\Users\tayle\AppData\Local\Temp\sjgc.
+10AA cinit CODE >2741:C:\Users\tayle\AppData\Local\Temp\sjgc.
+10AC cinit CODE >2742:C:\Users\tayle\AppData\Local\Temp\sjgc.
+10AE cinit CODE >2743:C:\Users\tayle\AppData\Local\Temp\sjgc.
 10B2 intcode_body CODE >37:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\Interrupt.c
 10E0 intcode_body CODE >39:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\Interrupt.c
 10EA intcode_body CODE >40:C:\Users\tayle\MPLABXV42\lab10\Lab10test.X\Interrupt.c
@@ -804,7 +804,7 @@ __HidataBANK1 0 0 ABS 0 idataBANK1 dist/default/production\Lab10test.X.productio
 __end_of_write_data 15B2 0 CODE 0 text25 dist/default/production\Lab10test.X.production.obj
 __Hibigdata 0 0 CODE 0 ibigdata dist/default/production\Lab10test.X.production.obj
 __size_of_fillCircle 0 0 ABS 0 - dist/default/production\Lab10test.X.production.obj
-__mediumconst FDCE 0 MEDIUMCONST 0 mediumconst C:\Users\tayle\AppData\Local\Temp\s1k88.obj
+__mediumconst FDCE 0 MEDIUMCONST 0 mediumconst C:\Users\tayle\AppData\Local\Temp\sjgc.obj
 fillCircleHelper@cornername 29 0 COMRAM 1 cstackCOMRAM dist/default/production\Lab10test.X.production.obj
 __Heeprom_data 0 0 EEDATA 0 eeprom_data dist/default/production\Lab10test.X.production.obj
 drawtext@cursor_x E4 0 BANK0 1 cstackBANK0 dist/default/production\Lab10test.X.production.obj
@@ -819,13 +819,13 @@ main@i 43 0 COMRAM 1 cstackCOMRAM dist/default/production\Lab10test.X.production
 __size_of_Init_UART 0 0 ABS 0 - dist/default/production\Lab10test.X.production.obj
 __Lsmallconst 0 0 SMALLCONST 0 smallconst dist/default/production\Lab10test.X.production.obj
 _TRMT 7D61 0 ABS 0 - dist/default/production\Lab10test.X.production.obj
-___sp 0 0 STACK 2 stack C:\Users\tayle\AppData\Local\Temp\s1k88.obj
+___sp 0 0 STACK 2 stack C:\Users\tayle\AppData\Local\Temp\sjgc.obj
 _font FDCF 0 MEDIUMCONST 0 mediumconst dist/default/production\Lab10test.X.production.obj
 _main 1C 0 CODE 0 text0 dist/default/production\Lab10test.X.production.obj
 _nums 12A 0 BANK1 1 dataBANK1 dist/default/production\Lab10test.X.production.obj
 _txt1 154 0 BANK1 1 dataBANK1 dist/default/production\Lab10test.X.production.obj
 _wrap 51 0 COMRAM 1 dataCOMRAM dist/default/production\Lab10test.X.production.obj
-start 18 0 CODE 0 init C:\Users\tayle\AppData\Local\Temp\s1k88.obj
+start 18 0 CODE 0 init C:\Users\tayle\AppData\Local\Temp\sjgc.obj
 fillCircle@color 41 0 COMRAM 1 cstackCOMRAM dist/default/production\Lab10test.X.production.obj
 __CFG_BOREN$OFF 0 0 ABS 0 - dist/default/production\Lab10test.X.production.obj
 __size_of_main 0 0 ABS 0 - dist/default/production\Lab10test.X.production.obj
@@ -851,11 +851,11 @@ printf@c 29 0 COMRAM 1 cstackCOMRAM dist/default/production\Lab10test.X.producti
 printf@f 1D 0 COMRAM 1 cstackCOMRAM dist/default/production\Lab10test.X.production.obj
 _T0CONbits FD5 0 ABS 0 - dist/default/production\Lab10test.X.production.obj
 __HdataCOMRAM 0 0 ABS 0 dataCOMRAM dist/default/production\Lab10test.X.production.obj
-__accesstop 80 0 ABS 0 - C:\Users\tayle\AppData\Local\Temp\s1k88.obj
-intlevel0 0 0 CODE 0 text C:\Users\tayle\AppData\Local\Temp\s1k88.obj
-intlevel1 0 0 CODE 0 text C:\Users\tayle\AppData\Local\Temp\s1k88.obj
-intlevel2 0 0 CODE 0 text C:\Users\tayle\AppData\Local\Temp\s1k88.obj
-intlevel3 0 0 CODE 0 text C:\Users\tayle\AppData\Local\Temp\s1k88.obj
+__accesstop 80 0 ABS 0 - C:\Users\tayle\AppData\Local\Temp\sjgc.obj
+intlevel0 0 0 CODE 0 text C:\Users\tayle\AppData\Local\Temp\sjgc.obj
+intlevel1 0 0 CODE 0 text C:\Users\tayle\AppData\Local\Temp\sjgc.obj
+intlevel2 0 0 CODE 0 text C:\Users\tayle\AppData\Local\Temp\sjgc.obj
+intlevel3 0 0 CODE 0 text C:\Users\tayle\AppData\Local\Temp\sjgc.obj
 __LbssCOMRAM 0 0 ABS 0 bssCOMRAM dist/default/production\Lab10test.X.production.obj
 __LnvFARRAM 0 0 FARRAM 0 nvFARRAM dist/default/production\Lab10test.X.production.obj
 __size_of_Deactivate_Buzzer 0 0 ABS 0 - dist/default/production\Lab10test.X.production.obj
@@ -877,8 +877,8 @@ _ADCON1 FC1 0 ABS 0 - dist/default/production\Lab10test.X.production.obj
 _ADCON2 FC0 0 ABS 0 - dist/default/production\Lab10test.X.production.obj
 _ADRESH FC4 0 ABS 0 - dist/default/production\Lab10test.X.production.obj
 _ADRESL FC3 0 ABS 0 - dist/default/production\Lab10test.X.production.obj
-___inthi_sp 0 0 STACK 2 stack C:\Users\tayle\AppData\Local\Temp\s1k88.obj
-___intlo_sp 0 0 STACK 2 stack C:\Users\tayle\AppData\Local\Temp\s1k88.obj
+___inthi_sp 0 0 STACK 2 stack C:\Users\tayle\AppData\Local\Temp\sjgc.obj
+___intlo_sp 0 0 STACK 2 stack C:\Users\tayle\AppData\Local\Temp\sjgc.obj
 _Reset_Nec_State 15EE 0 CODE 0 text40 dist/default/production\Lab10test.X.production.obj
 __LdataCOMRAM 0 0 ABS 0 dataCOMRAM dist/default/production\Lab10test.X.production.obj
 _CCPR2L FBB 0 ABS 0 - dist/default/production\Lab10test.X.production.obj
@@ -984,7 +984,7 @@ __Hbank14 0 0 ABS 0 bank14 dist/default/production\Lab10test.X.production.obj
 __Hbank15 0 0 ABS 0 bank15 dist/default/production\Lab10test.X.production.obj
 __Hbigbss 0 0 BIGRAM 1 bigbss dist/default/production\Lab10test.X.production.obj
 __Hbigram 0 0 ABS 0 bigram dist/default/production\Lab10test.X.production.obj
-__smallconst 0 0 SMALLCONST 0 smallconst C:\Users\tayle\AppData\Local\Temp\s1k88.obj
+__smallconst 0 0 SMALLCONST 0 smallconst C:\Users\tayle\AppData\Local\Temp\sjgc.obj
 fillCircleHelper@f 35 0 COMRAM 1 cstackCOMRAM dist/default/production\Lab10test.X.production.obj
 fillCircleHelper@r 27 0 COMRAM 1 cstackCOMRAM dist/default/production\Lab10test.X.production.obj
 fillCircleHelper@x 37 0 COMRAM 1 cstackCOMRAM dist/default/production\Lab10test.X.production.obj
@@ -1205,8 +1205,8 @@ _strlen 13C2 0 CODE 0 text15 dist/default/production\Lab10test.X.production.obj
 __Lfardata 0 0 FARRAM 0 fardata dist/default/production\Lab10test.X.production.obj
 __end_of_Rcmd2red 143E 0 CODE 0 text23 dist/default/production\Lab10test.X.production.obj
 __size_of_INTx_isr 0 0 ABS 0 - dist/default/production\Lab10test.X.production.obj
-stackhi F7F 0 ABS 0 - C:\Users\tayle\AppData\Local\Temp\s1k88.obj
-stacklo 1A8 0 ABS 0 - C:\Users\tayle\AppData\Local\Temp\s1k88.obj
+stackhi F7F 0 ABS 0 - C:\Users\tayle\AppData\Local\Temp\sjgc.obj
+stacklo 1A8 0 ABS 0 - C:\Users\tayle\AppData\Local\Temp\sjgc.obj
 __Lintcode 8 0 CODE 0 intcode dist/default/production\Lab10test.X.production.obj
 __end_of_drawChar 940 0 CODE 0 text16 dist/default/production\Lab10test.X.production.obj
 __end_of_drawtext C92 0 CODE 0 text14 dist/default/production\Lab10test.X.production.obj
@@ -1301,7 +1301,7 @@ __Ltext36 0 0 ABS 0 text36 dist/default/production\Lab10test.X.production.obj
 __Ltext38 0 0 ABS 0 text38 dist/default/production\Lab10test.X.production.obj
 __Ltext39 0 0 ABS 0 text39 dist/default/production\Lab10test.X.production.obj
 __Ltext40 0 0 ABS 0 text40 dist/default/production\Lab10test.X.production.obj
-__ramtop 1000 0 RAM 0 ramtop C:\Users\tayle\AppData\Local\Temp\s1k88.obj
+__ramtop 1000 0 RAM 0 ramtop C:\Users\tayle\AppData\Local\Temp\sjgc.obj
 drawtext@size 40 0 COMRAM 1 cstackCOMRAM dist/default/production\Lab10test.X.production.obj
 putch@c 11 0 COMRAM 1 cstackCOMRAM dist/default/production\Lab10test.X.production.obj
 _INTx_isr 64C 0 CODE 0 text39 dist/default/production\Lab10test.X.production.obj

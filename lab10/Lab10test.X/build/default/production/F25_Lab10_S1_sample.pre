@@ -5233,7 +5233,6 @@ else {
 LED_Sel = 2;
 }
 
-
 *RGB_LED[LED_Sel] =
 (*RGB_LED[LED_Sel] & (~(0b00000111 << off[LED_Sel]))) |
 ((color2[found] & 0b00000111) << off[LED_Sel]);

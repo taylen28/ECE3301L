@@ -641,7 +641,7 @@ text27 1556 15FB CODE 1556 0
 %locals
 dist/default/production\Lab10test.X.production.obj
 C:\Program Files (x86)\Microchip\xc8\v1.34\include\pic18f4620.h
-C:\Users\tayle\AppData\Local\Temp\s1k88.
+C:\Users\tayle\AppData\Local\Temp\sjgc.
 2548 1030 0 CODE 0
 2550 1030 0 CODE 0
 2553 1030 0 CODE 0
@@ -744,14 +744,14 @@ F25_Lab10_S1_sample.c
 102 1A4 0 CODE 0
 106 1A8 0 CODE 0
 107 1AC 0 CODE 0
-112 1AE 0 CODE 0
-116 276 0 CODE 0
-117 278 0 CODE 0
-118 27C 0 CODE 0
-119 280 0 CODE 0
-120 284 0 CODE 0
+111 1AE 0 CODE 0
+115 276 0 CODE 0
+116 278 0 CODE 0
+117 27C 0 CODE 0
+118 280 0 CODE 0
+119 284 0 CODE 0
 65 286 0 CODE 0
-125 288 0 CODE 0
+124 288 0 CODE 0
 C:\Program Files (x86)\Microchip\xc8\v1.34\sources\common\doprnt.c
 464 28C 0 CODE 0
 533 28C 0 CODE 0
